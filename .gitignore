@@ -15,3 +15,6 @@ distribution-data*.json
 #Hardhat files
 cache
 artifacts
+
+#IDE
+.idea/*

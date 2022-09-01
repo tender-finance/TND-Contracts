@@ -9,6 +9,6 @@ contract TND is MintableBaseToken {
     }
 
     function id() external pure returns (string memory _name) {
-        return "GMX";
+        return "TND";
     }
 }
