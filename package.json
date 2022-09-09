@@ -1,13 +1,14 @@
 {
-  "name": "gmx-contracts",
+  "name": "tnd-contracts",
   "version": "1.0.0",
   "description": "",
   "files": [
     "contracts/**/*.sol"
   ],
   "scripts": {
-    "test": "npx hardhat test",
+    "test": "hardhat test",
     "compile": "hardhat compile",
+    "clean": "hardhat clean",
     "typechain": "hardhat typechain"
   },
   "author": "",

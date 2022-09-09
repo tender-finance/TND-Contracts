@@ -508,7 +508,7 @@ describe("Vester", function () {
     await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000 * 12, 18))
     await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
 
-    const rewardRouter = await deployContract("RewardRouter", [])
+    const rewardRouter = await deployContract("RewardRouterV2", [])
     await rewardRouter.initialize(
       eth.address,
       tnd.address,
@@ -517,6 +517,7 @@ describe("Vester", function () {
       stakedTndTracker.address,
       bonusTndTracker.address,
       feeTndTracker.address,
+      AddressZero
     )
 
     // allow rewardRouter to stake in stakedTndTracker
@@ -721,7 +722,7 @@ describe("Vester", function () {
     await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000 * 12, 18))
     await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
 
-    const rewardRouter = await deployContract("RewardRouter", [])
+    const rewardRouter = await deployContract("RewardRouterV2", [])
     await rewardRouter.initialize(
       eth.address,
       tnd.address,
@@ -730,6 +731,7 @@ describe("Vester", function () {
       stakedTndTracker.address,
       bonusTndTracker.address,
       feeTndTracker.address,
+      AddressZero
     )
 
     // allow rewardRouter to stake in stakedTndTracker
