@@ -12,7 +12,6 @@ import "./interfaces/IRewardTracker.sol";
 import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
-import "../core/interfaces/IGlpManager.sol";
 import "../access/Governable.sol";
 
 contract RewardRouterV2 is ReentrancyGuard, Governable {

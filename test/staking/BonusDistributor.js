@@ -50,7 +50,7 @@ describe("BonusDistributor", function () {
     await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000, 18))
     await bnTnd.setMinter(wallet.address, true)
     await bnTnd.mint(bonusTndDistributor.address, expandDecimals(1500, 18))
-    await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esGmx per second
+    await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
     await tnd.setMinter(wallet.address, true)
     await tnd.mint(user0.address, expandDecimals(1000, 18))
 
