@@ -29,6 +29,107 @@ describe("RewardRouterV2", function () {
   let tndVester
   let rewardRouter
 
+  // beforeEach(async () => {
+  //   // Eth
+  //   eth = await deployContract("Token", [])
+  //   bnb = await deployContract("Token", [])
+  //
+  //   // Tnd tokens
+  //   tnd = await deployContract("TND", []);
+  //   esTnd = await deployContract("EsTND", []);
+  //   bnTnd = await deployContract("MintableBaseToken", ["Bonus TND", "bnTND", 0]);
+  //
+  //   // StakeTndTracker
+  //   stakedTndTracker = await deployContract("RewardTracker", ["Staked TND", "sTND"])
+  //   stakedTndDistributor = await deployContract("RewardDistributor", [esTnd.address, stakedTndTracker.address])
+  //   await stakedTndTracker.initialize([tnd.address, esTnd.address], stakedTndDistributor.address)
+  //   await stakedTndDistributor.updateLastDistributionTime()
+  //
+  //   // BonusTndTracker
+  //   bonusTndTracker = await deployContract("RewardTracker", ["Staked + Bonus TND", "sbTND"])
+  //   bonusTndDistributor = await deployContract("BonusDistributor", [bnTnd.address, bonusTndTracker.address])
+  //   await bonusTndTracker.initialize([stakedTndTracker.address], bonusTndDistributor.address)
+  //   await bonusTndDistributor.updateLastDistributionTime()
+  //
+  //   // FeeTndTracker
+  //   feeTndTracker = await deployContract("RewardTracker", ["Staked + Bonus + Fee TND", "sbfTND"])
+  //   feeTndDistributor = await deployContract("RewardDistributor", [eth.address, feeTndTracker.address])
+  //   await feeTndTracker.initialize([bonusTndTracker.address, bnTnd.address], feeTndDistributor.address)
+  //   await feeTndDistributor.updateLastDistributionTime()
+  //
+  //   // allow bonusTndTracker to stake stakedTndTracker
+  //   await stakedTndTracker.setHandler(bonusTndTracker.address, true)
+  //   // allow bonusTndTracker to stake feeTndTracker
+  //   await bonusTndTracker.setHandler(feeTndTracker.address, true)
+  //   await bonusTndDistributor.setBonusMultiplier(10000)
+  //   // allow feeTndTracker to stake bnTnd
+  //   await bnTnd.setHandler(feeTndTracker.address, true)
+  //
+  //   // mint esTnd for distributors
+  //   await esTnd.setMinter(wallet.address, true)
+  //   // await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000, 18))
+  //   await esTnd.mint(stakedTndDistributor.address, expandDecimals(10000000, 18))
+  //   await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
+  //
+  //   // mint bnTnd for distributor
+  //   await bnTnd.setMinter(wallet.address, true)
+  //   await bnTnd.mint(bonusTndDistributor.address, expandDecimals(1500, 18))
+  //
+  //   // Vester
+  //   tndVester = await deployContract("Vester", [
+  //     "Vested TND",             // _name
+  //     "vTND",                   // _symbol
+  //     vestingDuration,          // _vestingDuration
+  //     esTnd.address,            // _esToken
+  //     feeTndTracker.address,    // _pairToken
+  //     tnd.address,              // _claimableToken
+  //     stakedTndTracker.address, // _rewardTracker
+  //   ])
+  //
+  //   // Router
+  //   rewardRouter = await deployContract("RewardRouterV2", [])
+  //   await rewardRouter.initialize(
+  //       eth.address, //eth.address,
+  //       tnd.address,
+  //       esTnd.address,
+  //       bnTnd.address,
+  //       stakedTndTracker.address,
+  //       bonusTndTracker.address,
+  //       feeTndTracker.address,
+  //       tndVester.address,
+  //   )
+  //
+  //   // await esTnd.setHandler(tokenManager.address, true)
+  //   await tndVester.setHandler(wallet.address, true)
+  //
+  //   // await stakedTndTracker.setInPrivateTransferMode(true)
+  //   // await stakedTndTracker.setInPrivateStakingMode(true)
+  //   // await bonusTndTracker.setInPrivateTransferMode(true)
+  //   // await bonusTndTracker.setInPrivateStakingMode(true)
+  //   // await bonusTndTracker.setInPrivateClaimingMode(true)
+  //   // await feeTndTracker.setInPrivateTransferMode(true)
+  //   // await feeTndTracker.setInPrivateStakingMode(true)
+  //   //
+  //   // await esTnd.setInPrivateTransferMode(true)
+  //
+  //   // updateEsTndHandlers
+  //   esTnd.setHandler(rewardRouter.address, true)
+  //   esTnd.setHandler(stakedTndDistributor.address, true)
+  //   esTnd.setHandler(stakedTndTracker.address, true)
+  //   esTnd.setHandler(tndVester.address, true)
+  //
+  //   // enableRewardRouter
+  //   stakedTndTracker.setHandler(rewardRouter.address, true)
+  //   bonusTndTracker.setHandler(rewardRouter.address, true)
+  //   feeTndTracker.setHandler(rewardRouter.address, true)
+  //   esTnd.setHandler(rewardRouter.address, true)
+  //   bnTnd.setMinter(rewardRouter.address, true)
+  //   esTnd.setMinter(tndVester.address, true)
+  //   tndVester.setHandler(rewardRouter.address, true)
+  //   feeTndTracker.setHandler(tndVester.address, true)
+  //
+  // })
+
   beforeEach(async () => {
     // Eth
     eth = await deployContract("Token", [])
@@ -57,24 +158,6 @@ describe("RewardRouterV2", function () {
     await feeTndTracker.initialize([bonusTndTracker.address, bnTnd.address], feeTndDistributor.address)
     await feeTndDistributor.updateLastDistributionTime()
 
-    // allow bonusTndTracker to stake stakedTndTracker
-    await stakedTndTracker.setHandler(bonusTndTracker.address, true)
-    // allow bonusTndTracker to stake feeTndTracker
-    await bonusTndTracker.setHandler(feeTndTracker.address, true)
-    await bonusTndDistributor.setBonusMultiplier(10000)
-    // allow feeTndTracker to stake bnTnd
-    await bnTnd.setHandler(feeTndTracker.address, true)
-
-    // mint esTnd for distributors
-    await esTnd.setMinter(wallet.address, true)
-    // await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000, 18))
-    await esTnd.mint(stakedTndDistributor.address, expandDecimals(10000000, 18))
-    await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
-
-    // mint bnTnd for distributor
-    await bnTnd.setMinter(wallet.address, true)
-    await bnTnd.mint(bonusTndDistributor.address, expandDecimals(1500, 18))
-
     // Vester
     tndVester = await deployContract("Vester", [
       "Vested TND",             // _name
@@ -99,35 +182,48 @@ describe("RewardRouterV2", function () {
         tndVester.address,
     )
 
-    // await esTnd.setHandler(tokenManager.address, true)
+    // Set private
+    await esTnd.setInPrivateTransferMode(true)
+    await stakedTndTracker.setInPrivateTransferMode(true)
+    await stakedTndTracker.setInPrivateStakingMode(true)
+    await bonusTndTracker.setInPrivateTransferMode(true)
+    await bonusTndTracker.setInPrivateStakingMode(true)
+    await bonusTndTracker.setInPrivateClaimingMode(true)
+    await feeTndTracker.setInPrivateTransferMode(true)
+    await feeTndTracker.setInPrivateStakingMode(true)
+
+    // Set handler and minter
+    await stakedTndTracker.setHandler(rewardRouter.address, true)
+    await stakedTndTracker.setHandler(bonusTndTracker.address, true)
+
+    await bonusTndTracker.setHandler(rewardRouter.address, true)
+    await bonusTndTracker.setHandler(feeTndTracker.address, true)
+    await bonusTndDistributor.setBonusMultiplier(10000)
+
+    await feeTndTracker.setHandler(rewardRouter.address, true)
+    await feeTndTracker.setHandler(tndVester.address, true)
+
+    await esTnd.setHandler(rewardRouter.address, true)
+    await esTnd.setHandler(stakedTndTracker.address, true)
+    await esTnd.setHandler(stakedTndDistributor.address, true)
+    await esTnd.setHandler(tndVester.address, true)
+    await esTnd.setMinter(tndVester.address, true)
+
+    await bnTnd.setHandler(feeTndTracker.address, true)
+    await bnTnd.setMinter(rewardRouter.address, true)
+
+    await tndVester.setHandler(rewardRouter.address, true)
+
+    // Other
+    await stakedTndDistributor.setTokensPerInterval("20667989410000000") // 0.02066798941 esTnd per second
+
+    await bnTnd.setMinter(wallet.address, true)
+    await bnTnd.mint(bonusTndDistributor.address, expandDecimals(1500, 18))
+
+    await esTnd.setMinter(wallet.address, true)
+    await esTnd.mint(stakedTndDistributor.address, expandDecimals(50000, 18))
+
     await tndVester.setHandler(wallet.address, true)
-
-    // await stakedTndTracker.setInPrivateTransferMode(true)
-    // await stakedTndTracker.setInPrivateStakingMode(true)
-    // await bonusTndTracker.setInPrivateTransferMode(true)
-    // await bonusTndTracker.setInPrivateStakingMode(true)
-    // await bonusTndTracker.setInPrivateClaimingMode(true)
-    // await feeTndTracker.setInPrivateTransferMode(true)
-    // await feeTndTracker.setInPrivateStakingMode(true)
-    //
-    // await esTnd.setInPrivateTransferMode(true)
-
-    // updateEsTndHandlers
-    esTnd.setHandler(rewardRouter.address, true)
-    esTnd.setHandler(stakedTndDistributor.address, true)
-    esTnd.setHandler(stakedTndTracker.address, true)
-    esTnd.setHandler(tndVester.address, true)
-
-    // enableRewardRouter
-    stakedTndTracker.setHandler(rewardRouter.address, true)
-    bonusTndTracker.setHandler(rewardRouter.address, true)
-    feeTndTracker.setHandler(rewardRouter.address, true)
-    esTnd.setHandler(rewardRouter.address, true)
-    bnTnd.setMinter(rewardRouter.address, true)
-    esTnd.setMinter(tndVester.address, true)
-    tndVester.setHandler(rewardRouter.address, true)
-    feeTndTracker.setHandler(tndVester.address, true)
-
   })
 
   it("inits", async () => {
@@ -154,7 +250,6 @@ describe("RewardRouterV2", function () {
       feeTndTracker.address,
       tndVester.address,
     )).to.be.revertedWith("RewardRouter: already initialized")
-
   })
 
   it("stakeTndForAccount, stakeTnd, stakeEsTnd, unstakeTnd, unstakeEsTnd, claimEsTnd, claimFees, compound, batchCompoundForAccounts", async () => {

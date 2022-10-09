@@ -1,8 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 const parse = require('csv-parse')
-const {verify} = require("./verify")
-
 
 const network = (process.env.HARDHAT_NETWORK || 'mainnet');
 
@@ -83,7 +81,6 @@ async function deployContract(name, args, label, options) {
   const argStr = args.map((i) => `"${i}"`).join(" ")
   console.info(`Deploying ${info} ${contract.address} ${argStr}`)
   await contract.deployTransaction.wait()
-  await verify(contract, args);
   console.info("... Completed!")
   return contract
 }

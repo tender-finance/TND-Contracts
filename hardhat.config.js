@@ -3,7 +3,7 @@ require("@nomiclabs/hardhat-etherscan")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
 
-// const {
+const {
 //   BSC_URL,
 //   BSC_DEPLOY_KEY,
 //   BSCSCAN_API_KEY,
@@ -11,8 +11,9 @@ require('@typechain/hardhat')
 //   SNOWTRACE_API_KEY,
 //   ARBISCAN_API_KEY,
 //   ETHERSCAN_API_KEY,
-//   BSC_TESTNET_URL,
-//   BSC_TESTNET_DEPLOY_KEY,
+  BSC_TESTNET_URL,
+  BSC_TESTNET_DEPLOY_KEY,
+  BSCSCAN_TESTNET_API_KEY,
 //   ARBITRUM_TESTNET_DEPLOY_KEY,
 //   ARBITRUM_TESTNET_URL,
 //   ARBITRUM_DEPLOY_KEY,
@@ -23,7 +24,7 @@ require('@typechain/hardhat')
 //   POLYGON_URL,
 //   MAINNET_URL,
 //   MAINNET_DEPLOY_KEY
-// } = require("./env.json")
+} = require("./env.json")
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -52,12 +53,12 @@ module.exports = {
     //   gasPrice: 10000000000,
     //   accounts: [BSC_DEPLOY_KEY]
     // },
-    // testnet: {
-    //   url: BSC_TESTNET_URL,
-    //   chainId: 97,
-    //   gasPrice: 20000000000,
-    //   accounts: [BSC_TESTNET_DEPLOY_KEY]
-    // },
+    testnet: {
+      url: BSC_TESTNET_URL,
+      chainId: 97,
+      gasPrice: 20000000000,
+      accounts: [BSC_TESTNET_DEPLOY_KEY]
+    },
     // arbitrumTestnet: {
     //   url: ARBITRUM_TESTNET_URL,
     //   gasPrice: 10000000000,
@@ -89,13 +90,14 @@ module.exports = {
     // }
   },
   etherscan: {
-    // apiKey: {
+    apiKey: {
     //   mainnet: MAINNET_DEPLOY_KEY,
     //   arbitrumOne: ARBISCAN_API_KEY,
     //   avalanche: SNOWTRACE_API_KEY,
     //   bsc: BSCSCAN_API_KEY,
     //   polygon: POLYGONSCAN_API_KEY,
-    // }
+      bscTestnet: BSCSCAN_TESTNET_API_KEY,
+    }
   },
   solidity: {
     version: "0.6.12",
