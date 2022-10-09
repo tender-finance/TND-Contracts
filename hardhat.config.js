@@ -3,7 +3,7 @@ require("@nomiclabs/hardhat-etherscan")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
 
-const {
+// const {
 //   BSC_URL,
 //   BSC_DEPLOY_KEY,
 //   BSCSCAN_API_KEY,
@@ -11,9 +11,9 @@ const {
 //   SNOWTRACE_API_KEY,
 //   ARBISCAN_API_KEY,
 //   ETHERSCAN_API_KEY,
-  BSC_TESTNET_URL,
-  BSC_TESTNET_DEPLOY_KEY,
-  BSCSCAN_TESTNET_API_KEY,
+//   BSC_TESTNET_URL,
+//   BSC_TESTNET_DEPLOY_KEY,
+//   BSCSCAN_TESTNET_API_KEY,
 //   ARBITRUM_TESTNET_DEPLOY_KEY,
 //   ARBITRUM_TESTNET_URL,
 //   ARBITRUM_DEPLOY_KEY,
@@ -24,6 +24,16 @@ const {
 //   POLYGON_URL,
 //   MAINNET_URL,
 //   MAINNET_DEPLOY_KEY
+// } = require("./env.json")
+
+const {
+  BSCSCAN_TESTNET_API_KEY,
+  BSC_TESTNET_DEPLOY_KEY,
+  BSC_TESTNET_URL,
+
+  ARBISCAN_API_KEY,
+  ARBITRUM_DEPLOY_KEY,
+  ARBITRUM_URL
 } = require("./env.json")
 
 // This is a sample Hardhat task. To learn how to create your own go to
@@ -65,12 +75,13 @@ module.exports = {
     //   chainId: 421611,
     //   accounts: [ARBITRUM_TESTNET_DEPLOY_KEY]
     // },
-    // arbitrum: {
-    //   url: ARBITRUM_URL,
-    //   gasPrice: 30000000000,
-    //   chainId: 42161,
-    //   accounts: [ARBITRUM_DEPLOY_KEY]
-    // },
+    arbitrum: {
+      url: ARBITRUM_URL,
+      // gasPrice: 30000000000,
+      gasPrice: 100000000,
+      chainId: 42161,
+      accounts: [ARBITRUM_DEPLOY_KEY]
+    },
     // avax: {
     //   url: AVAX_URL,
     //   gasPrice: 200000000000,
@@ -92,7 +103,7 @@ module.exports = {
   etherscan: {
     apiKey: {
     //   mainnet: MAINNET_DEPLOY_KEY,
-    //   arbitrumOne: ARBISCAN_API_KEY,
+      arbitrumOne: ARBISCAN_API_KEY,
     //   avalanche: SNOWTRACE_API_KEY,
     //   bsc: BSCSCAN_API_KEY,
     //   polygon: POLYGONSCAN_API_KEY,

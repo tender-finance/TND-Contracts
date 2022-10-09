@@ -14,11 +14,6 @@ describe("RewardRouterV2", function () {
   const bnTndToDistributor = expandDecimals(1500, 18)
   const esTndToDistributer = expandDecimals(50000, 18)
 
-  // const tndToVester = expandDecimals(2 * 1000 * 1000, 18)
-  // const tndToOwnerWallet = expandDecimals(8 * 1000 * 1000, 18)
-  // const esTndToDistributer = expandDecimals(50000 * 12, 18)
-  // const bnTndToDistributor = expandDecimals(15 * 1000 * 1000, 18)
-
   const provider = waffle.provider
   const [wallet, user0, user1, user2, user3, user4] = provider.getWallets()
   const vestingDuration = 365 * 24 * 60 * 60
