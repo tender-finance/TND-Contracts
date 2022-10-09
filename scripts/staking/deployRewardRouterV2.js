@@ -229,7 +229,7 @@ async function main() {
   await sendTxn(tndVester.setHandler(rewardRouter.address, true), "tndVester.setHandler(rewardRouter)")
 
   // Other
-  // mint Tnd
+  // const config
   const tndToVester = expandDecimals(2 * 1000 * 1000, 18)
   const tndToOwnerWallet = expandDecimals(8 * 1000 * 1000, 18)
   const esTndToDistributer = expandDecimals(50000 * 12, 18)
