@@ -10,6 +10,7 @@ import "../libraries/utils/Address.sol";
 
 import "./interfaces/IRewardTracker.sol";
 import "./interfaces/IVester.sol";
+import "./interfaces/CTokenInterfacesTnd.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
 import "../access/Governable.sol";
@@ -32,6 +33,8 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     address public feeTndTracker;
 
     address public tndVester;
+    
+    cTokenInterfacesTnd cToken;
 
     mapping (address => address) public pendingReceivers;
 
@@ -98,6 +101,10 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
 
     function unstakeEsTnd(uint256 _amount) external nonReentrant {
         _unstakeTnd(msg.sender, esTnd, _amount, true);
+    }
+
+    function setCToken(address _cToken) external onlyGov{
+        cToken = CTokenInterfaceTnd(_cToken);
     }
 
     function claim() external nonReentrant {
@@ -219,6 +226,11 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         uint256 esTndBalance = IERC20(esTnd).balanceOf(_sender);
         if (esTndBalance > 0) {
             IERC20(esTnd).transferFrom(_sender, receiver, esTndBalance);
+        }
+
+        uint cTokenBalance = cToken.balanceOf(_sender);
+        if(cTokenBalance > 0) {
+            ctoken.transferFrom(_sender, receiver, cTokenBalance);
         }
 
         IVester(tndVester).transferStakeValues(_sender, receiver);
