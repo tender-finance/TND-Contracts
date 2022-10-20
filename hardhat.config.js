@@ -1,7 +1,7 @@
-require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-etherscan")
-require("hardhat-contract-sizer")
-require('@typechain/hardhat')
+require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-etherscan");
+require("hardhat-contract-sizer");
+require("@typechain/hardhat");
 
 // const {
 //   BSC_URL,
@@ -33,18 +33,18 @@ const {
 
   ARBISCAN_API_KEY,
   ARBITRUM_DEPLOY_KEY,
-  ARBITRUM_URL
-} = require("./env.json")
+  ARBITRUM_URL,
+} = require("./env.json");
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async () => {
-  const accounts = await ethers.getSigners()
+  const accounts = await ethers.getSigners();
 
   for (const account of accounts) {
-    console.info(account.address)
+    console.info(account.address);
   }
-})
+});
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
@@ -55,7 +55,7 @@ task("accounts", "Prints the list of accounts", async () => {
 module.exports = {
   networks: {
     hardhat: {
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
     },
     // bsc: {
     //   url: BSC_URL,
@@ -67,7 +67,7 @@ module.exports = {
       url: BSC_TESTNET_URL,
       chainId: 97,
       gasPrice: 20000000000,
-      accounts: [BSC_TESTNET_DEPLOY_KEY]
+      accounts: [BSC_TESTNET_DEPLOY_KEY],
     },
     // arbitrumTestnet: {
     //   url: ARBITRUM_TESTNET_URL,
@@ -80,7 +80,7 @@ module.exports = {
       // gasPrice: 30000000000,
       gasPrice: 100000000,
       chainId: 42161,
-      accounts: [ARBITRUM_DEPLOY_KEY]
+      accounts: [ARBITRUM_DEPLOY_KEY],
     },
     // avax: {
     //   url: AVAX_URL,
@@ -102,25 +102,25 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-    //   mainnet: MAINNET_DEPLOY_KEY,
+      //   mainnet: MAINNET_DEPLOY_KEY,
       arbitrumOne: ARBISCAN_API_KEY,
-    //   avalanche: SNOWTRACE_API_KEY,
-    //   bsc: BSCSCAN_API_KEY,
-    //   polygon: POLYGONSCAN_API_KEY,
+      //   avalanche: SNOWTRACE_API_KEY,
+      //   bsc: BSCSCAN_API_KEY,
+      //   polygon: POLYGONSCAN_API_KEY,
       bscTestnet: BSCSCAN_TESTNET_API_KEY,
-    }
+    },
   },
   solidity: {
     version: "0.6.12",
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1
-      }
-    }
+        runs: 1,
+      },
+    },
   },
   typechain: {
     outDir: "typechain",
     target: "ethers-v5",
   },
-}
+};
