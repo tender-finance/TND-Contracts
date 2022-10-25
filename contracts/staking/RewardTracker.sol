@@ -10,7 +10,6 @@ import "../libraries/utils/ReentrancyGuard.sol";
 import "./interfaces/IRewardDistributor.sol";
 import "./interfaces/IRewardTracker.sol";
 import "../access/Governable.sol";
-import "./interfaces/cTokenInterfacesTnd.sol"
 
 contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     using SafeMath for uint256;
@@ -48,8 +47,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     mapping (address => bool) public isHandler;
 
     event Claim(address receiver, uint256 amount);
-
-    CTokenInterfaceTnd cToken;
 
     constructor(string memory _name, string memory _symbol) public {
         name = _name;
@@ -89,10 +86,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
-    }
-
-    function setCToken(address _cToken) external onlyGov{
-        cToken = CTokenInterfaceTnd(_cToken);
     }
 
     // to help users who accidentally send their tokens to this contract
@@ -254,8 +247,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
         totalDepositSupply[_depositToken] = totalDepositSupply[_depositToken].add(_amount);
 
         _mint(_account, _amount);
-        cToken.mintForUser(_amount, _account);
-
     }
 
     function _unstake(address _account, address _depositToken, uint256 _amount, address _receiver) private {
@@ -276,7 +267,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
 
         _burn(_account, _amount);
         IERC20(_depositToken).safeTransfer(_receiver, _amount);
-        cToken.redeemUnderlyingForUser(_amount, _account);
     }
 
     function _updateRewards(address _account) private {
