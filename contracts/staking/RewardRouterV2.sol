@@ -13,8 +13,10 @@ import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
 import "../access/Governable.sol";
+import "./interfaces/ITenderfiToTnd.sol";
+import "./interfaces/ITndToTenderfi.sol";
 
-contract RewardRouterV2 is ReentrancyGuard, Governable {
+contract RewardRouterV2 is ReentrancyGuard, Governable, ITenderfiToTnd {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using Address for address payable;
@@ -30,13 +32,14 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     address public stakedTndTracker;
     address public bonusTndTracker;
     address public feeTndTracker;
-
     address public tndVester;
+    address public tenderfi;
 
     mapping (address => address) public pendingReceivers;
 
     event StakeTnd(address account, address token, uint256 amount);
     event UnstakeTnd(address account, address token, uint256 amount);
+    event RedeemDebtWithTnd(address account, address receiver, uint256 amount);
 
     receive() external payable {
         require(msg.sender == weth, "Router: invalid sender");
@@ -224,6 +227,17 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         IVester(tndVester).transferStakeValues(_sender, receiver);
     }
 
+    function setTenderfi(address _account) external onlyGov {
+        tenderfi = _account;
+    }
+
+    function redeemDebtWithTnd(address _account, address _receiver, uint256 _amount) external override {
+        require(msg.sender == tenderfi, "RewardRouterV2: invalid msg.sender");
+
+        _unstakeTndAndUseTenderfi(_account, tnd, _amount, true, address(0), _receiver);
+        emit RedeemDebtWithTnd(_account, _receiver, _amount);
+    }
+
     function _validateReceiver(address _receiver) private view {
         require(IRewardTracker(stakedTndTracker).averageStakedAmounts(_receiver) == 0, "RewardRouter: stakedTndTracker.averageStakedAmounts > 0");
         require(IRewardTracker(stakedTndTracker).cumulativeRewards(_receiver) == 0, "RewardRouter: stakedTndTracker.cumulativeRewards > 0");
@@ -256,24 +270,32 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         }
     }
 
-    function _stakeTnd(address _fundingAccount, address _account, address _token, uint256 _amount) private {
+    function _stakeTndAndUseTenderfi(address _fundingAccount, address _account, address _token, uint256 _amount, address _tenderfi) private {
         require(_amount > 0, "RewardRouter: invalid _amount");
 
         IRewardTracker(stakedTndTracker).stakeForAccount(_fundingAccount, _account, _token, _amount);
         IRewardTracker(bonusTndTracker).stakeForAccount(_account, _account, stakedTndTracker, _amount);
         IRewardTracker(feeTndTracker).stakeForAccount(_account, _account, bonusTndTracker, _amount);
 
+        if (_tenderfi != address(0) && _token == tnd) {
+            ITndToTenderfi(tenderfi).mintTsTnd(_account, _amount);
+        }
+
         emit StakeTnd(_account, _token, _amount);
     }
 
-    function _unstakeTnd(address _account, address _token, uint256 _amount, bool _shouldReduceBnTnd) private {
+    function _unstakeTndAndUseTenderfi(address _account, address _token, uint256 _amount, bool _shouldReduceBnTnd, address _tenderfi, address _receiver) private {
         require(_amount > 0, "RewardRouter: invalid _amount");
+
+        if (_tenderfi != address(0) && _token == tnd) {
+            ITndToTenderfi(tenderfi).redeemTsTnd(_account, _amount);
+        }
 
         uint256 balance = IRewardTracker(stakedTndTracker).stakedAmounts(_account);
 
         IRewardTracker(feeTndTracker).unstakeForAccount(_account, bonusTndTracker, _amount, _account);
         IRewardTracker(bonusTndTracker).unstakeForAccount(_account, stakedTndTracker, _amount, _account);
-        IRewardTracker(stakedTndTracker).unstakeForAccount(_account, _token, _amount, _account);
+        IRewardTracker(stakedTndTracker).unstakeForAccount(_account, _token, _amount, _receiver);
 
         if (_shouldReduceBnTnd) {
             uint256 bnTndAmount = IRewardTracker(bonusTndTracker).claimForAccount(_account, _account);
@@ -290,5 +312,13 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         }
 
         emit UnstakeTnd(_account, _token, _amount);
+    }
+
+    function _stakeTnd(address _fundingAccount, address _account, address _token, uint256 _amount) private {
+        _stakeTndAndUseTenderfi(_fundingAccount, _account, _token, _amount, tenderfi);
+    }
+
+    function _unstakeTnd(address _account, address _token, uint256 _amount, bool _shouldReduceBnTnd) private {
+        _unstakeTndAndUseTenderfi(_account, _token, _amount, _shouldReduceBnTnd, tenderfi, _account);
     }
 }
