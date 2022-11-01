@@ -34,6 +34,8 @@ describe("RewardRouterV2", function () {
   let tndVester
   let rewardRouter
 
+  let tenderfi
+
   beforeEach(async () => {
     // Eth
     eth = await deployContract("Token", [])
@@ -84,6 +86,11 @@ describe("RewardRouterV2", function () {
         feeTndTracker.address,
         tndVester.address,
     )
+
+    // TestTenderfi
+    tenderfi = await deployContract("TestTenderfi", []);
+    await tenderfi.setTndProtocol(rewardRouter.address);
+    await rewardRouter.setTenderfi(tenderfi.address);
 
     // Set private
     await esTnd.setInPrivateTransferMode(true)
@@ -649,5 +656,91 @@ describe("RewardRouterV2", function () {
     //
     // await rewardRouter.connect(user1).claimEsTnd()
     // await tndVester.connect(user1).deposit(expandDecimals(3207, 18))
+  })
+
+  it("IntegrationTndAndTenderfi", async () => {
+    await eth.deposit({ value: expandDecimals(10, 18) })
+
+    await tnd.setMinter(wallet.address, true)
+    await tnd.mint(tndVester.address, expandDecimals(10000, 18))
+
+    await eth.mint(feeTndDistributor.address, expandDecimals(50, 18))
+    await feeTndDistributor.setTokensPerInterval("41335970000000") // 0.00004133597 ETH per second
+
+    await tnd.mint(user1.address, expandDecimals(200, 18))
+    expect(await tnd.balanceOf(user1.address)).eq(expandDecimals(200, 18))
+
+    // Start tests
+    await tnd.connect(user1).approve(stakedTndTracker.address, expandDecimals(200, 18))
+    await rewardRouter.connect(user1).stakeTnd(expandDecimals(200, 18))
+    expect(await tnd.balanceOf(user1.address)).eq(0)
+    expect(await tnd.balanceOf(user2.address)).eq(0)
+
+    // Test 1
+    await expect(tenderfi.connect(user1).takeLoan(expandDecimals(300, 18))).to.be.revertedWith("TestTenderfi: not eligibility for loan")
+    await tenderfi.connect(user1).takeLoan(expandDecimals(200, 18))
+    await expect(rewardRouter.connect(user1).unstakeTnd(expandDecimals(200, 18))).to.be.revertedWith("TestTenderfi: not redeemable")
+
+    // Test 2
+    await expect(tenderfi.connect(user1).repaysLoan(expandDecimals(300, 18))).to.be.revertedWith("TestTenderfi: loan not taken")
+    await tenderfi.connect(user1).repaysLoan(expandDecimals(200, 18))
+    await rewardRouter.connect(user1).unstakeTnd(expandDecimals(200, 18))
+
+    // Test 3
+    await tnd.connect(user1).approve(stakedTndTracker.address, expandDecimals(200, 18))
+    await rewardRouter.connect(user1).stakeTnd(expandDecimals(200, 18))
+    await expect(tenderfi.redeemDebt(user1.address, user2.address, expandDecimals(200, 18))).to.be.revertedWith("TestTenderfi: loan not taken")
+    await tenderfi.connect(user1).takeLoan(expandDecimals(200, 18))
+
+    expect(await stakedTndTracker.depositBalances(user1.address, tnd.address)).eq(expandDecimals(200, 18))
+    expect(await tnd.balanceOf(user2.address)).eq(0)
+
+    await tenderfi.redeemDebt(user1.address, user2.address, expandDecimals(50, 18))
+    expect(await stakedTndTracker.depositBalances(user1.address, tnd.address)).eq(expandDecimals(150, 18))
+    expect(await tnd.balanceOf(user2.address)).eq(expandDecimals(50, 18))
+
+    await tenderfi.redeemDebt(user1.address, user2.address, expandDecimals(150, 18))
+    expect(await stakedTndTracker.depositBalances(user1.address, tnd.address)).eq(0)
+    expect(await tnd.balanceOf(user2.address)).eq(expandDecimals(200, 18))
+
+    // Test 4
+    await tnd.connect(user2).transfer(user1.address, expandDecimals(200, 18))
+    await tnd.connect(user1).approve(stakedTndTracker.address, expandDecimals(200, 18))
+    await rewardRouter.connect(user1).stakeTnd(expandDecimals(200, 18))
+    await tenderfi.connect(user1).takeLoan(expandDecimals(200, 18))
+
+    await increaseTime(provider, 24 * 60 * 60)
+    await mineBlock(provider)
+
+    expect(await tnd.balanceOf(user1.address)).eq(0)
+    expect(await esTnd.balanceOf(user1.address)).eq(0)
+    expect(await bnTnd.balanceOf(user1.address)).eq(0)
+    expect(await eth.balanceOf(user1.address)).eq(0)
+
+    expect(await stakedTndTracker.depositBalances(user1.address, tnd.address)).eq(expandDecimals(200, 18))
+    expect(await stakedTndTracker.depositBalances(user1.address, esTnd.address)).eq(0)
+    expect(await feeTndTracker.depositBalances(user1.address, bnTnd.address)).eq(0)
+
+    await rewardRouter.connect(user1).handleRewards(
+      true, // _shouldClaimTnd
+      true, // _shouldStakeTnd
+      true, // _shouldClaimEsTnd
+      true, // _shouldStakeEsTnd
+      true, // _shouldStakeMultiplierPoints
+      true, // _shouldClaimWeth
+      false // _shouldConvertWethToEth
+    )
+
+    expect(await tnd.balanceOf(user1.address)).eq(0)
+    expect(await esTnd.balanceOf(user1.address)).eq(0)
+    expect(await bnTnd.balanceOf(user1.address)).eq(0)
+    expect(await eth.balanceOf(user1.address)).gt("3560000000000000000") // 3.56, 100 / 28 => ~3.57
+    expect(await eth.balanceOf(user1.address)).lt("3580000000000000000") // 3.58
+
+    expect(await stakedTndTracker.depositBalances(user1.address, tnd.address)).eq(expandDecimals(200, 18))
+    expect(await stakedTndTracker.depositBalances(user1.address, esTnd.address)).gt(expandDecimals(1785, 18)) // 50000 / 28 => ~1785
+    expect(await stakedTndTracker.depositBalances(user1.address, esTnd.address)).lt(expandDecimals(1786, 18))
+    expect(await feeTndTracker.depositBalances(user1.address, bnTnd.address)).gt("540000000000000000") // 200 / 365 => ~0.55
+    expect(await feeTndTracker.depositBalances(user1.address, bnTnd.address)).lt("560000000000000000") // 0.56
   })
 })
