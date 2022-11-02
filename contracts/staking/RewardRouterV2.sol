@@ -39,7 +39,7 @@ contract RewardRouterV2 is ReentrancyGuard, Governable, ITenderfiToTnd {
 
     event StakeTnd(address account, address token, uint256 amount);
     event UnstakeTnd(address account, address token, uint256 amount);
-    event RedeemDebtWithTnd(address account, address receiver, uint256 amount);
+    event RedeemDebtWithTnd(address account, address receiver, uint256 amount, bool flagStake);
 
     receive() external payable {
         require(msg.sender == weth, "Router: invalid sender");
@@ -231,11 +231,17 @@ contract RewardRouterV2 is ReentrancyGuard, Governable, ITenderfiToTnd {
         tenderfi = _account;
     }
 
-    function redeemDebtWithTnd(address _account, address _receiver, uint256 _amount) external override {
+    function redeemDebtWithTnd(address _account, address _receiver, uint256 _amount, bool _flagStake) external override nonReentrant {
         require(msg.sender == tenderfi, "RewardRouterV2: invalid msg.sender");
 
-        _unstakeTndAndUseTenderfi(_account, tnd, _amount, true, address(0), _receiver);
-        emit RedeemDebtWithTnd(_account, _receiver, _amount);
+        if (_flagStake) {
+            _unstakeTndAndUseTenderfi(_account, tnd, _amount, true, address(0), address(this));
+            IERC20(tnd).safeApprove(stakedTndTracker, _amount);
+            _stakeTnd(address(this), _receiver, tnd, _amount);
+        } else {
+            _unstakeTndAndUseTenderfi(_account, tnd, _amount, true, address(0), _receiver);
+        }
+        emit RedeemDebtWithTnd(_account, _receiver, _amount, _flagStake);
     }
 
     function _validateReceiver(address _receiver) private view {
