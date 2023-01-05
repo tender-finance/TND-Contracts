@@ -108,7 +108,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
         if (inPrivateStakingMode) { revert("RewardTracker: action not enabled"); }
         _stake(msg.sender, msg.sender, _depositToken, _amount);
     }
-
     function stakeForAccount(address _fundingAccount, address _account, address _depositToken, uint256 _amount) external override nonReentrant {
         _validateHandler();
         _stake(_fundingAccount, _account, _depositToken, _amount);

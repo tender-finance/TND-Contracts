@@ -20,6 +20,8 @@ contract BaseToken is IERC20, IBaseToken {
     uint256 public override totalSupply;
     uint256 public nonStakingSupply;
 
+    uint256 public MAX_Supply = 10000000*1e18;
+
     address public gov;
 
     mapping (address => uint256) public balances;
@@ -153,6 +155,7 @@ contract BaseToken is IERC20, IBaseToken {
 
     function _mint(address _account, uint256 _amount) internal {
         require(_account != address(0), "BaseToken: mint to the zero address");
+        require(totalSupply < MAX_Supply, "supply cap reached");
 
         _updateRewards(_account);
 
