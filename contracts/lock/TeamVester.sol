@@ -45,6 +45,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
     mapping(bytes32 => VestingSchedule) private vestingSchedules;
     uint256 private vestingSchedulesTotalAmount;
     mapping(address => uint256) private holdersVestingCount;
+    uint256 private tokenStaked;
 
     event Released(uint256 amount);
     event Revoked();
@@ -75,6 +76,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
     constructor(address token_) {
         require(token_ != address(0x0));
         _token = IERC20(token_);
+        tokenStaked = 0;
     }
 
     receive() external payable {}
@@ -185,7 +187,59 @@ contract TokenVesting is Ownable, ReentrancyGuard{
         holdersVestingCount[_beneficiary] = currentVestingCount.add(1);
         uint256 amount = _token.balanceOf(address(this));
         _token.approve(rewardRouter.stakedTndTracker(), amount);
+    }
+
+    function _stake(uint256 amount) private {
         rewardRouter.stakeTnd(amount);
+        tokenStaked = tokenStaked.add(amount);
+    }
+
+    function stake(bytes32 vestingScheduleId, uint256 amount) public nonReentrant {
+        VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
+        bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
+        bool isOwner = msg.sender == owner();
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can stake their tokens");
+        _stake(amount);
+    }
+
+    function stakeAll(bytes32 vestingScheduleId) public nonReentrant {
+        VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
+        bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
+        bool isOwner = msg.sender == owner();
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can stake their tokens");
+        uint256 amount = _token.balanceOf(address(this));
+        _stake(amount);
+    }
+
+    function _unstake(uint256 amount) private {
+        rewardRouter.unstakeTnd(amount);
+        tokenStaked = tokenStaked.sub(amount);
+    }
+
+    function unstake(bytes32 vestingScheduleId, uint256 amount) public nonReentrant {
+        VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
+        bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
+        bool isOwner = msg.sender == owner();
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can unstake their tokens");
+        _unstake(amount);
+    }
+
+    function unstakeAll(bytes32 vestingScheduleId) public nonReentrant {
+        VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
+        bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
+        bool isOwner = msg.sender == owner();
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can unstake their tokens");
+        uint256 amount = tokenStaked;
+        _unstake(amount);
+    }
+
+    function unstakeReleasable(bytes32 vestingScheduleId) public nonReentrant {
+        VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
+        bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
+        bool isOwner = msg.sender == owner();
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can unstake their tokens");
+        uint256 amount = _computeReleasableAmount(vestingSchedule);
+        _unstake(amount);
     }
 
     /**
@@ -223,7 +277,6 @@ contract TokenVesting is Ownable, ReentrancyGuard{
         nonReentrant
         onlyOwner{
         require(this.getWithdrawableAmount() >= amount, "TokenVesting: not enough withdrawable funds");
-        rewardRouter.unstakeTnd(amount);
         _token.safeTransfer(owner(), amount);
     }
 
@@ -251,9 +304,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
             uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
             require(vestedAmount >= amount, "TokenVesting: cannot release tokens, not enough vested tokens");
             require(amount > 0, "cannot release 0 tokens");
-            console.log("Unstaking %d tnd", amount);
 
-            rewardRouter.unstakeTnd(amount);
             vestingSchedule.released = vestingSchedule.released.add(amount);
             address payable beneficiaryPayable = payable(vestingSchedule.beneficiary);
             vestingSchedulesTotalAmount = vestingSchedulesTotalAmount.sub(amount);
@@ -386,10 +437,7 @@ contract TokenVesting is Ownable, ReentrancyGuard{
         VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
         bool isBeneficiary = msg.sender == vestingSchedule.beneficiary;
         bool isOwner = msg.sender == owner();
-        require(
-            isBeneficiary || isOwner,
-            "TokenVesting: only beneficiary and owner can release vested tokens"
-        );
+        require( isBeneficiary || isOwner, "TokenVesting: only beneficiary and owner can release rewards");
         claimAndRetrieveFees(vestingScheduleId);
         claimAndRetrieveEsTnd(vestingScheduleId);
         rewardRouter.compound();
