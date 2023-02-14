@@ -12,6 +12,8 @@ import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../access/Governable.sol";
 
+import "./interfaces/ComptrollerInterface.sol";
+
 contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -50,6 +52,11 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     event Deposit(address account, uint256 amount);
     event Withdraw(address account, uint256 claimedAmount, uint256 balance);
     event PairTransfer(address indexed from, address indexed to, uint256 value);
+
+    ComptrollerInterface comptroller = ComptrollerInterface(0xeed247Ba513A8D6f78BE9318399f5eD1a4808F8e);
+
+    
+    bool public vipBoostsEnabled = false;
 
     constructor (
         string memory _name,
@@ -105,6 +112,15 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     // to help users who accidentally send their tokens to this contract
     function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {
         IERC20(_token).safeTransfer(_account, _amount);
+    }
+
+    // If true vip users will be earning boosts
+    function setVipBoostsEnabled(bool _vipBoostsEnabled) external onlyGov {
+        vipBoostsEnabled = _vipBoostsEnabled;
+    }
+
+    function getIsUserVip(address user) public view returns (bool){
+        return comptroller.getIsAccountVip(user);
     }
 
     function withdraw() external nonReentrant {
@@ -189,8 +205,13 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
         if (maxVestableAmount < cumulativeRewardDeduction) {
             return 0;
         }
-
-        return maxVestableAmount.sub(cumulativeRewardDeduction);
+        if(getIsUserVip(_account) && vipBoostsEnabled){
+            return maxVestableAmount.sub(cumulativeRewardDeduction).mul(2);
+        }else{
+            return maxVestableAmount.sub(cumulativeRewardDeduction);
+        }
+    
+        
     }
 
     function getCombinedAverageStakedAmount(address _account) public override view returns (uint256) {
@@ -327,7 +348,7 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
             uint256 maxAmount = getMaxVestableAmount(_account);
             require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
         }
-
+        
         emit Deposit(_account, _amount);
     }
 
