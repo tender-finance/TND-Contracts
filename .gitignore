@@ -11,6 +11,11 @@ data/snapshotBalance
 data/holders
 flattened
 distribution-data*.json
+yarn-error.log
+cache_forge
+out
+
+
 
 #Hardhat files
 cache
