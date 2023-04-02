@@ -1,10 +1,18 @@
 require("@nomiclabs/hardhat-waffle")
-import('@openzeppelin/hardhat-upgrades');
+require('@openzeppelin/hardhat-upgrades');
 require("@nomiclabs/hardhat-etherscan")
 require("@nomiclabs/hardhat-ethers")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
 require('@nomicfoundation/hardhat-foundry')
+const {subtask} = require("hardhat/config");
+const {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS} = require('hardhat/builtin-tasks/task-names')
+subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(
+  async (_, __, runSuper) => {
+    const paths = await runSuper();
+    return paths.filter(p=> !p.endsWith('.t.sol'));
+  }
+)
 
 const {
   ARBITRUM_RPC,

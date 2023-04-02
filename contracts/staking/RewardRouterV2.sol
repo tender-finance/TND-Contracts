@@ -5,16 +5,16 @@ pragma solidity 0.6.12;
 import "../libraries/math/SafeMath.sol";
 import "../libraries/token/IERC20.sol";
 import "../libraries/token/SafeERC20.sol";
-import "../libraries/utils/ReentrancyGuard.sol";
-import "../libraries/utils/Address.sol";
-
 import "./interfaces/IRewardTracker.sol";
 import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
-import "../access/Governable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import "./interfaces/ComptrollerInterface.sol";
 
-contract RewardRouterV2 is ReentrancyGuard, Governable {
+contract RewardRouterV2 is ReentrancyGuardUpgradeable, OwnableUpgradeable {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
   using Address for address payable;
@@ -51,7 +51,7 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     address _bonusTndTracker,
     address _feeTndTracker,
     address _tndVester
-  ) external onlyGov {
+  ) external initializer {
     require(!isInitialized, "RewardRouter: already initialized");
     isInitialized = true;
 
@@ -66,21 +66,22 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     feeTndTracker = _feeTndTracker;
 
     tndVester = _tndVester;
+    __Ownable_init();
   }
 
   // to help users who accidentally send their tokens to this contract
-  function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {
+  function withdrawToken(address _token, address _account, uint256 _amount) external onlyOwner {
     IERC20(_token).safeTransfer(_account, _amount);
   }
 
-  function batchStakeTndForAccount(address[] memory _accounts, uint256[] memory _amounts) external nonReentrant onlyGov {
+  function batchStakeTndForAccount(address[] memory _accounts, uint256[] memory _amounts) external nonReentrant onlyOwner {
     address _tnd = tnd;
     for (uint256 i = 0; i < _accounts.length; i++) {
       _stakeTnd(msg.sender, _accounts[i], _tnd, _amounts[i]);
     }
   }
 
-  function stakeTndForAccount(address _account, uint256 _amount) external nonReentrant onlyGov {
+  function stakeTndForAccount(address _account, uint256 _amount) external nonReentrant onlyOwner {
     _stakeTnd(msg.sender, _account, tnd, _amount);
   }
 
@@ -123,7 +124,7 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     _compound(msg.sender);
   }
 
-  function compoundForAccount(address _account) external nonReentrant onlyGov {
+  function compoundForAccount(address _account) external nonReentrant onlyOwner {
     _compound(_account);
   }
 
@@ -175,7 +176,7 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
     }
   }
 
-  function batchCompoundForAccounts(address[] memory _accounts) external nonReentrant onlyGov {
+  function batchCompoundForAccounts(address[] memory _accounts) external nonReentrant onlyOwner {
     for (uint256 i = 0; i < _accounts.length; i++) {
       _compound(_accounts[i]);
     }

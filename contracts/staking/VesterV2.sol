@@ -5,24 +5,21 @@ pragma solidity 0.6.12;
 import "../libraries/math/SafeMath.sol";
 import "../libraries/token/IERC20.sol";
 import "../libraries/token/SafeERC20.sol";
-import "../libraries/utils/ReentrancyGuard.sol";
-
 import "./interfaces/IRewardTracker.sol";
 import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
-import "../access/Governable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "./interfaces/ComptrollerInterface.sol";
 
-contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
+contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
-    address immutable public TND = 0xC47D9753F3b32aA9548a7C3F30b6aEc3B2d2798C;
 
     string public name;
     string public symbol;
-    uint8 public decimals = 18;
+    uint8 public decimals;
 
     uint256 public vestingDuration;
 
@@ -36,6 +33,9 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     uint256 public pairSupply;
 
     bool public hasMaxVestableAmount;
+
+    address public TND;
+    ComptrollerInterface public comptroller;
 
     mapping (address => uint256) public balances;
     mapping (address => uint256) public override pairAmounts;
@@ -55,10 +55,9 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     event Withdraw(address account, uint256 claimedAmount, uint256 balance);
     event PairTransfer(address indexed from, address indexed to, uint256 value);
 
-    ComptrollerInterface comptroller = ComptrollerInterface(0xeed247Ba513A8D6f78BE9318399f5eD1a4808F8e);
 
 
-    bool public vipBoostsEnabled = false;
+    bool public vipBoostsEnabled;
 
     function initialize(
         string memory _name,
@@ -68,7 +67,9 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
         address _pairToken,
         address _claimableToken,
         address _rewardTracker
-    ) public initializer {
+    ) public initializer{
+        comptroller = ComptrollerInterface(0xeed247Ba513A8D6f78BE9318399f5eD1a4808F8e);
+        decimals = 18;
         name = _name;
         symbol = _symbol;
 
@@ -79,17 +80,19 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
         claimableToken = _claimableToken;
 
         rewardTracker = _rewardTracker;
+        vipBoostsEnabled = false;
 
         if (rewardTracker != address(0)) {
             hasMaxVestableAmount = true;
         }
+        __Ownable_init();
     }
 
-    function setHandler(address _handler, bool _isActive) external onlyGov {
+    function setHandler(address _handler, bool _isActive) external onlyOwner {
         isHandler[_handler] = _isActive;
     }
 
-    function setHasMaxVestableAmount(bool _hasMaxVestableAmount) external onlyGov {
+    function setHasMaxVestableAmount(bool _hasMaxVestableAmount) external onlyOwner {
         hasMaxVestableAmount = _hasMaxVestableAmount;
     }
 
@@ -112,12 +115,12 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
     }
 
     // to help users who accidentally send their tokens to this contract
-    function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {
+    function withdrawToken(address _token, address _account, uint256 _amount) external onlyOwner {
         IERC20(_token).safeTransfer(_account, _amount);
     }
 
     // If true vip users will be earning boosts
-    function setVipBoostsEnabled(bool _vipBoostsEnabled) external onlyGov {
+    function setVipBoostsEnabled(bool _vipBoostsEnabled) external onlyOwner {
         vipBoostsEnabled = _vipBoostsEnabled;
     }
 
@@ -196,7 +199,22 @@ contract Vester is IVester, IERC20, ReentrancyGuard, Governable {
 
     function getMaxVestableAmount(address _account) public override view returns (uint256) {
         if (!hasRewardTracker()) { return 0; }
-        return IRewardTracker(rewardTracker).depositBalances(_account, TND);
+
+        uint256 transferredCumulativeReward = transferredCumulativeRewards[_account];
+        uint256 bonusReward = bonusRewards[_account];
+        uint256 cumulativeReward = IRewardTracker(rewardTracker).cumulativeRewards(_account);
+        uint256 maxVestableAmount = cumulativeReward.add(transferredCumulativeReward).add(bonusReward);
+
+        uint256 cumulativeRewardDeduction = cumulativeRewardDeductions[_account];
+
+        if (maxVestableAmount < cumulativeRewardDeduction) {
+            return 0;
+        }
+        if(getIsUserVip(_account) && vipBoostsEnabled){
+            return maxVestableAmount.sub(cumulativeRewardDeduction).mul(2);
+        }else{
+            return maxVestableAmount.sub(cumulativeRewardDeduction);
+        }
     }
 
     function getCombinedAverageStakedAmount(address _account) public override view returns (uint256) {

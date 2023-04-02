@@ -1,50 +1,50 @@
 import '@nomiclabs/hardhat-ethers';
 import '@openzeppelin/hardhat-upgrades';
-import {ethers, upgrades} from 'hardhat';
-
-const tndAddress ='0xC47D9753F3b32aA9548a7C3F30b6aEc3B2d2798C';
-const esTNDAddress ='0xff9bD42211F12e2de6599725895F37b4cE654ab2';
-const bnTNDAddress = '0x0d2ebf71aFdfAfe8E3fde3eAf9C502896F9e3718';
-const sTNDAddress = '0x0597c60BD1230A040953CB1C54d0e854CD522932';
-const sbTNDAddress = '0xE5538bfCCbA7456A66d4C5f9019988c1E5F09E91';
-const sbfTNDAddress = '0x6c6F25C37Db5620389E02B78Ef4664874B69539c';
-const nativeTokenAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
-const vestingDuration = 365 * 24 * 60 * 60;
+import hre, {ethers, upgrades} from 'hardhat';
+import * as c from './constants';
+import {getImplementationAddress } from '@openzeppelin/upgrades-core';
 
 
 const main = async () => {
+  const [deployer] = await ethers.getSigners();
+  console.log(deployer.address)
   // Deploying
-  const UpgradableVester = await ethers.getContractFactory("UpgradableVester");
-  const vesterBeacon = await upgrades.deployBeacon(UpgradableVester);
+  const UpgradableVester = await ethers.getContractFactory("contracts/staking/VesterV2.sol:VesterV2", deployer);
 
-  const instance = await upgrades.deployProxy(UpgradableVester, [
+  // upgrades.deployProxy()
+  const vester = await upgrades.deployProxy(UpgradableVester, [
     "Vested TND",
     "vTND",
-    vestingDuration,
-    esTNDAddress,
-    sbfTNDAddress,
-    tndAddress,
-    sTNDAddress
+    c.vestingDuration,
+    c.esTNDAddress,
+    c.sbfTNDAddress,
+    c.tndAddress,
+    c.sTNDAddress
+  ])
+
+  await vester.deployed();
+  console.log(await vester.owner())
+
+  const RewardRouter = await ethers.getContractFactory("RewardRouterV2", deployer);
+
+  const rewardRouter = await upgrades.deployProxy(RewardRouter, [
+    c.nativeTokenAddress,
+    c.tndAddress,
+    c.esTNDAddress,
+    c.bnTNDAddress,
+    c.sTNDAddress,
+    c.sbTNDAddress,
+    c.sbfTNDAddress,
+    vester.address
   ]);
-
-  await instance.deployed();
-  const vesterAddress = vesterBeacon.address;
-
-  const RewardRouter = await ethers.getContractFactory("RewardRouterV2");
-  const rewardRouter = await upgrades.deployBeacon(RewardRouter);
   await rewardRouter.deployed();
+  console.log(await rewardRouter.owner())
 
-  rewardRouter.initialize(
-    nativeTokenAddress,
-    tndAddress,
-    esTNDAddress,
-    bnTNDAddress,
-    sTNDAddress,
-    sbTNDAddress,
-    sbfTNDAddress,
-    vesterAddress
-  );
-  tndVester.setHandler(rewardRouter.address, true)
+  console.log('upgrading')
+  const VesterV3 = await ethers.getContractFactory("contracts/staking/VesterV3.sol:VesterV3", deployer);
+  await upgrades.upgradeProxy(vester.address, VesterV3)
+
+  // vesterProxy.setHandler(rewardRouter.address, true)
 
 
 }

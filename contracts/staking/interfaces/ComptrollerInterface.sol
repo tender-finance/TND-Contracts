@@ -5,13 +5,15 @@ abstract contract ComptrollerInterface {
     /// @notice Indicator that this is a Comptroller contract (for inspection)
     bool public constant isComptroller = true;
 
+    function getAccountLiquidity(address account) virtual external view returns (uint, uint, uint);
+
     /*** Assets You Are In ***/
 
     function enterMarkets(address[] calldata cTokens) virtual external returns (uint[] memory);
     function exitMarket(address cToken) virtual external returns (uint);
 
     function addToMarketExternal(address cToken, address borrower) virtual external;
-    
+
     /*** Policy Hooks ***/
 
     function mintAllowed(address cToken, address minter, uint mintAmount) virtual external returns (uint);
@@ -24,7 +26,7 @@ abstract contract ComptrollerInterface {
     function borrowVerify(address cToken, address borrower, uint borrowAmount) virtual external;
 
     function getIsAccountVip(address _account) virtual public view returns (bool);
-    
+
     function repayBorrowAllowed(
         address cToken,
         address payer,
