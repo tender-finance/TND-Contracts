@@ -22,6 +22,11 @@ const {
 
 module.exports = {
   networks: {
+    anvil: {
+      url: "http://127.0.0.1:8545",
+      enabled: true,
+      // accounts: [PRIVATE_KEY],
+    },
     hardhat: {
       allowUnlimitedContractSize: true,
       forking: {

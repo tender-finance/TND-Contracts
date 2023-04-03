@@ -34,7 +34,6 @@ contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
 
     bool public hasMaxVestableAmount;
 
-    address public TND;
     ComptrollerInterface public comptroller;
 
     mapping (address => uint256) public balances;
