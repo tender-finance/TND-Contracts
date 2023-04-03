@@ -74,4 +74,6 @@ abstract contract ComptrollerInterface {
         address cTokenCollateral,
         uint repayAmount) virtual external view returns (uint, uint);
 
+        function claimComp(address holder) virtual public;
+
 }

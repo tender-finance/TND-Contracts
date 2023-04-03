@@ -13,6 +13,7 @@ import "./interfaces/IVester.sol";
 import "../tokens/interfaces/IMintable.sol";
 import "../tokens/interfaces/IWETH.sol";
 import "../access/Governable.sol";
+import "./interfaces/ComptrollerInterface.sol";
 
 contract RewardRouterV2 is ReentrancyGuard, Governable {
     using SafeMath for uint256;
@@ -33,6 +34,8 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
 
     address public tndVester;
 
+    address public unitroller;
+
     mapping (address => address) public pendingReceivers;
 
     event StakeTnd(address account, address token, uint256 amount);
@@ -50,7 +53,8 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         address _stakedTndTracker,
         address _bonusTndTracker,
         address _feeTndTracker,
-        address _tndVester
+        address _tndVester,
+        address _unitroller
     ) external onlyGov {
         require(!isInitialized, "RewardRouter: already initialized");
         isInitialized = true;
@@ -66,6 +70,7 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
         feeTndTracker = _feeTndTracker;
 
         tndVester = _tndVester;
+        unitroller = _unitroller;
     }
 
     // to help users who accidentally send their tokens to this contract
@@ -149,7 +154,9 @@ contract RewardRouterV2 is ReentrancyGuard, Governable {
 
         uint256 esTndAmount = 0;
         if (_shouldClaimEsTnd) {
-            esTndAmount = IRewardTracker(stakedTndTracker).claimForAccount(account, account);
+            IRewardTracker(stakedTndTracker).claimForAccount(account, account);
+            ComptrollerInterface(unitroller).claimComp(account);
+            esTndAmount = IERC20(esTnd).balanceOf(account);
         }
 
         if (_shouldStakeEsTnd && esTndAmount > 0) {
