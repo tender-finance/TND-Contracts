@@ -1,0 +1,814 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x05c619C2f138E26102cD5281b07d446AbEf259F0",
+    "txHash": "0x6e98b2bb28d6239eea926f439cc6f35d2639d3a753d33c02aaf0e084567c2fa6"
+  },
+  "proxies": [
+    {
+      "address": "0xA1F4B0fC497409301baEd83B84b846A7F22ab5f7",
+      "txHash": "0x709c6364e8159deaa17d306de3060778a9cc2c22a8487c93402fd69c8ced9811",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xebDCd07Bf0ee267f13C0A1e553972C0EE11d3361",
+      "txHash": "0x3174a7f293b8d6b824894c3d4aa5e885974f542900ad5391205b15c65ed901f0",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xB35fD70209F57eC6B099f4C16234F568BC6cAeF7",
+      "txHash": "0x39ecba5f65f88da8d4445fb928e74a4359907dd9ac0ae43183ebdda9829fce3e",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x10672236862DB3D90A145185a0832a22F142183B",
+      "txHash": "0x7041ef7ad082864ef9a6019ec8c15bcaddd720ec66d0a49547e30449a2eb9f20",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x464247623b6A12D61E69Bee136a0c5E75A45Fea9",
+      "txHash": "0xeeda4a9496174c082ede9bb42f3cef638757cc948aa3fe50da19783c77e14fe8",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x47eD9d9c58A05A0CdDDBaCeECeC0DFa589b3cE40",
+      "txHash": "0x3a716480af207bb8603d577c4d01bca29574f1c521ec3502716d43aca608ba4d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x5418515e944cb8C55fbb6C875FE1d9b1B4ECC09D",
+      "txHash": "0x349a8bb103b9785fcbd6ce90aa3603a8e1b04070b4f1be4aab4342321a5e4550",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xf47fB555f6807d5Ed65c0Ce7A0d9480108287e2A",
+      "txHash": "0x51497d720ae5ed562ee7028d55f6545ceea9f59ca9634fc0a0bc659edd7c845d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x0aB603d04741088904e67bD49b87f18329a5F8c7",
+      "txHash": "0xd26b801284366d4dd5190168282f50e3f06cefad24fc2dd1f9fd63c0383b6711",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x5d2CC1CAa5E27A8Dbb1F4b2dc093321403439fDa",
+      "txHash": "0x04cd52177322fce62e156d58e4cbee0d56a5c3f23a7960b9e720950d45089975",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "fcc2e181c8598e9dec41bee5f7ca758405ae4aa0e7ddcea176723aed0913a88c": {
+      "address": "0xAF8b9B6611D56d4d32721E3Be0B15d3495e5941d",
+      "txHash": "0xf76d7c71ea9e0752aa6f723fc20fea5ecbee2a6941aacde405e6c032b7a0ff31",
+      "layout": {
+        "solcVersion": "0.6.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "isInitialized",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bool",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:22"
+          },
+          {
+            "label": "weth",
+            "offset": 1,
+            "slot": "151",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:24"
+          },
+          {
+            "label": "tnd",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:26"
+          },
+          {
+            "label": "esTnd",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:27"
+          },
+          {
+            "label": "bnTnd",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:28"
+          },
+          {
+            "label": "stakedTndTracker",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:30"
+          },
+          {
+            "label": "bonusTndTracker",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:31"
+          },
+          {
+            "label": "feeTndTracker",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:32"
+          },
+          {
+            "label": "tndVester",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_address",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:34"
+          },
+          {
+            "label": "pendingReceivers",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_mapping(t_address,t_address)",
+            "contract": "RewardRouterV2",
+            "src": "contracts/staking/RewardRouterV2.sol:36"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_address,t_address)": {
+            "label": "mapping(address => address)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    },
+    "42c6ef2d7e80cdf22d4267fb716b2803e3051e6818b43ee165cda5f1d3d75f81": {
+      "address": "0x9DC0cC5A0d9915E4AED5dED5e679e77Eaa6D227D",
+      "txHash": "0xef52f35966688d21c3cc2b9d44f79a57df351e83d54121a5e1ced2843732a6e5",
+      "layout": {
+        "solcVersion": "0.6.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "name",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_string_storage",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:20"
+          },
+          {
+            "label": "symbol",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_string_storage",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:21"
+          },
+          {
+            "label": "decimals",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_uint8",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:22"
+          },
+          {
+            "label": "vestingDuration",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:24"
+          },
+          {
+            "label": "esToken",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:26"
+          },
+          {
+            "label": "pairToken",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:27"
+          },
+          {
+            "label": "claimableToken",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:28"
+          },
+          {
+            "label": "rewardTracker",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:30"
+          },
+          {
+            "label": "totalSupply",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:32"
+          },
+          {
+            "label": "pairSupply",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:33"
+          },
+          {
+            "label": "hasMaxVestableAmount",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_bool",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:35"
+          },
+          {
+            "label": "comptroller",
+            "offset": 1,
+            "slot": "161",
+            "type": "t_contract(ComptrollerInterface)3000",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:37"
+          },
+          {
+            "label": "balances",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:39"
+          },
+          {
+            "label": "pairAmounts",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:40"
+          },
+          {
+            "label": "cumulativeClaimAmounts",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:41"
+          },
+          {
+            "label": "claimedAmounts",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:42"
+          },
+          {
+            "label": "lastVestingTimes",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:43"
+          },
+          {
+            "label": "transferredAverageStakedAmounts",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:45"
+          },
+          {
+            "label": "transferredCumulativeRewards",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:46"
+          },
+          {
+            "label": "cumulativeRewardDeductions",
+            "offset": 0,
+            "slot": "169",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:47"
+          },
+          {
+            "label": "bonusRewards",
+            "offset": 0,
+            "slot": "170",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:48"
+          },
+          {
+            "label": "isHandler",
+            "offset": 0,
+            "slot": "171",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:50"
+          },
+          {
+            "label": "vipBoostsEnabled",
+            "offset": 0,
+            "slot": "172",
+            "type": "t_bool",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:59"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ComptrollerInterface)3000": {
+            "label": "contract ComptrollerInterface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "1a9af4ba81e552407407fbc87e68ea9eada5bbb9e78e0dc92db4bd5ca6fbaac1": {
+      "address": "0xb560D01a05e987B395Aa79f995cb71D4D43ba075",
+      "txHash": "0xbbc1e7935e765cf6a0e2762a0404eeb508e277ff7a634e56cc615e677c8de7cd",
+      "layout": {
+        "solcVersion": "0.6.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "name",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_string_storage",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:20"
+          },
+          {
+            "label": "symbol",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_string_storage",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:21"
+          },
+          {
+            "label": "decimals",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_uint8",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:22"
+          },
+          {
+            "label": "vestingDuration",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:24"
+          },
+          {
+            "label": "esToken",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:26"
+          },
+          {
+            "label": "pairToken",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:27"
+          },
+          {
+            "label": "claimableToken",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_address",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:28"
+          },
+          {
+            "label": "rewardTracker",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_address",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:30"
+          },
+          {
+            "label": "totalSupply",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:32"
+          },
+          {
+            "label": "pairSupply",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_uint256",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:33"
+          },
+          {
+            "label": "hasMaxVestableAmount",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_bool",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:35"
+          },
+          {
+            "label": "comptroller",
+            "offset": 1,
+            "slot": "161",
+            "type": "t_contract(ComptrollerInterface)10587",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:37"
+          },
+          {
+            "label": "balances",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:39"
+          },
+          {
+            "label": "pairAmounts",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:40"
+          },
+          {
+            "label": "cumulativeClaimAmounts",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:41"
+          },
+          {
+            "label": "claimedAmounts",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:42"
+          },
+          {
+            "label": "lastVestingTimes",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:43"
+          },
+          {
+            "label": "transferredAverageStakedAmounts",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:45"
+          },
+          {
+            "label": "transferredCumulativeRewards",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:46"
+          },
+          {
+            "label": "cumulativeRewardDeductions",
+            "offset": 0,
+            "slot": "169",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:47"
+          },
+          {
+            "label": "bonusRewards",
+            "offset": 0,
+            "slot": "170",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:48"
+          },
+          {
+            "label": "isHandler",
+            "offset": 0,
+            "slot": "171",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:50"
+          },
+          {
+            "label": "vipBoostsEnabled",
+            "offset": 0,
+            "slot": "172",
+            "type": "t_bool",
+            "contract": "VesterV3",
+            "src": "contracts/staking/VesterV3.sol:59"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ComptrollerInterface)10587": {
+            "label": "contract ComptrollerInterface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}

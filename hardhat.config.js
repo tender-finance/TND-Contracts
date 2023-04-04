@@ -1,10 +1,11 @@
-require("@nomiclabs/hardhat-waffle")
 require('@openzeppelin/hardhat-upgrades');
 require("@nomiclabs/hardhat-etherscan")
 require("@nomiclabs/hardhat-ethers")
 require("hardhat-contract-sizer")
 require('@typechain/hardhat')
 require('@nomicfoundation/hardhat-foundry')
+require("@foundry-rs/hardhat-anvil");
+
 const {subtask} = require("hardhat/config");
 const {TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS} = require('hardhat/builtin-tasks/task-names')
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(
@@ -21,11 +22,17 @@ const {
 } = require("./env.json")
 
 module.exports = {
+  defaultNetwork: "hardhat",
   networks: {
     anvil: {
       url: "http://127.0.0.1:8545",
+      launch: false,
       enabled: true,
-      // accounts: [PRIVATE_KEY],
+      forkUrl: ARBITRUM_RPC,
+      forkBlockNumber: 76433959,
+      chainId: 42161,
+      allowUnlimitedContractSize: true,
+      accounts: [PRIVATE_KEY],
     },
     hardhat: {
       allowUnlimitedContractSize: true,

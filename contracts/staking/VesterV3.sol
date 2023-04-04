@@ -12,6 +12,7 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "./interfaces/ComptrollerInterface.sol";
+import "hardhat/console.sol";
 
 contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     using SafeMath for uint256;
@@ -205,36 +206,26 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
             .div(1e18)
             .div(TNDTwapPrice);
     }
-    function getMaxVestableAmount(address _account) public override view returns (uint256) {
-        if (!hasRewardTracker()) { return 0; }
-        uint256 cumulativeRewardDeduction = cumulativeRewardDeductions[_account];
 
-        uint totalStaked = IERC20(rewardTracker).balanceOf(_account);
-        uint esTokenStaked = IRewardTracker(rewardTracker).depositBalances(_account, esToken);
-        uint maxVestableAmount = totalStaked-esTokenStaked;
-        if (maxVestableAmount < cumulativeRewardDeduction) {
+    function getNonEsTokenStaked(address _account) internal view returns (uint ){
+        uint totalStaked = IRewardTracker(pairToken).stakedAmounts(_account); // staked sbfTND
+        uint esTokenStaked = IRewardTracker(rewardTracker).depositBalances(_account, esToken); // staked esTND
+        if (totalStaked < esTokenStaked) {
             return 0;
         }
-        return maxVestableAmount.sub(cumulativeRewardDeduction);
+        return totalStaked.sub(esTokenStaked);
+    }
+
+    function getMaxVestableAmount(address _account) public override view returns (uint256) {
+        if (!hasRewardTracker()) { return 0; }
+        uint accountBalance = IERC20(esToken).balanceOf(_account);
+        uint stakedBalance = IRewardTracker(rewardTracker).depositBalances(_account, esToken);
+        uint vestingBalance = pairAmounts[_account];
+        return accountBalance.add(stakedBalance).add(vestingBalance);
     }
 
     function getCombinedAverageStakedAmount(address _account) public override view returns (uint256) {
-        uint256 cumulativeReward = IRewardTracker(rewardTracker).cumulativeRewards(_account);
-        // add in supply rewards
-        uint256 transferredCumulativeReward = transferredCumulativeRewards[_account];
-        uint256 totalCumulativeReward = cumulativeReward.add(transferredCumulativeReward);
-        if (totalCumulativeReward == 0) { return 0; }
-
-        uint256 averageStakedAmount = IRewardTracker(rewardTracker).averageStakedAmounts(_account);
-        averageStakedAmount = averageStakedAmount.add(getSupplyFactor(_account));
-        uint256 transferredAverageStakedAmount = transferredAverageStakedAmounts[_account];
-
-        return averageStakedAmount
-            .mul(cumulativeReward)
-            .div(totalCumulativeReward)
-            .add(
-                transferredAverageStakedAmount.mul(transferredCumulativeReward).div(totalCumulativeReward)
-            );
+        return getNonEsTokenStaked(_account);
     }
 
     function getPairAmount(address _account, uint256 _esAmount) public view returns (uint256) {
@@ -244,13 +235,7 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
         if (combinedAverageStakedAmount == 0) {
             return 0;
         }
-
-        uint256 maxVestableAmount = getMaxVestableAmount(_account);
-        if (maxVestableAmount == 0) {
-            return 0;
-        }
-
-        return _esAmount.mul(combinedAverageStakedAmount).div(maxVestableAmount);
+        return _esAmount;
     }
 
     function hasRewardTracker() public view returns (bool) {
@@ -336,6 +321,13 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
 
         _updateVesting(_account);
 
+        if (hasMaxVestableAmount) {
+            uint256 maxAmount = getMaxVestableAmount(_account);
+            console.log('maxAmount %s', getMaxVestableAmount(_account));
+            console.log('totalVested %s', getTotalVested(_account));
+            require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
+        }
+
         IERC20(esToken).safeTransferFrom(_account, address(this), _amount);
 
         _mint(_account, _amount);
@@ -348,11 +340,6 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
                 IERC20(pairToken).safeTransferFrom(_account, address(this), pairAmountDiff);
                 _mintPair(_account, pairAmountDiff);
             }
-        }
-
-        if (hasMaxVestableAmount) {
-            uint256 maxAmount = getMaxVestableAmount(_account);
-            require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
         }
 
         emit Deposit(_account, _amount);
