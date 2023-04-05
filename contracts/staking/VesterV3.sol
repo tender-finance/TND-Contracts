@@ -12,7 +12,6 @@ import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "./interfaces/ComptrollerInterface.sol";
-import "hardhat/console.sol";
 
 contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     using SafeMath for uint256;
@@ -335,8 +334,6 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
 
         if (hasMaxVestableAmount) {
             uint256 maxAmount = getMaxVestableAmount(_account);
-            console.log('maxAmount %s', getMaxVestableAmount(_account));
-            console.log('totalVested %s', getTotalVested(_account));
             require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
         }
 
