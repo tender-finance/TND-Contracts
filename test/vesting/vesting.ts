@@ -1,13 +1,13 @@
+import { getDeployment, increaseDays, formatAmount as fa } from '../utils/helpers';
 import { vestingFixture }  from './fixtures';
 import { CONTRACTS as c } from '../utils/constants';
 import {
+  expect,
   loadFixture,
   Contract,
   BigNumberish,
   SignerWithAddress,
-} from '../hhImports';
-import {expect} from '../chai';
-import { getDeployment, increaseDays, formatAmount as fa } from '../utils/helpers';
+} from '../imports';
 
 async function deposit(vester: Contract, amount: BigNumberish, signer: SignerWithAddress) {
   const esTND = await getDeployment('esTND');
