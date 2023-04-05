@@ -216,17 +216,15 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
         return totalStaked.sub(esTokenStaked);
     }
 
-    function getMaxVestableAmount(address _account) public override view returns (uint256) {
-        if (!hasRewardTracker()) { return 0; }
-        uint accountBalance = IERC20(esToken).balanceOf(_account);
-        uint stakedBalance = IRewardTracker(rewardTracker).depositBalances(_account, esToken);
-        uint vestingBalance = pairAmounts[_account];
-        return accountBalance.add(stakedBalance).add(vestingBalance);
-    }
-
     function getCombinedAverageStakedAmount(address _account) public override view returns (uint256) {
         return getNonEsTokenStaked(_account);
     }
+
+    function getMaxVestableAmount(address _account) public override view returns (uint256) {
+        if (!hasRewardTracker()) { return 0; }
+        return getCombinedAverageStakedAmount(_account);
+    }
+
 
     function getPairAmount(address _account, uint256 _esAmount) public view returns (uint256) {
         if (!hasRewardTracker()) { return 0; }
@@ -321,13 +319,6 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
 
         _updateVesting(_account);
 
-        if (hasMaxVestableAmount) {
-            uint256 maxAmount = getMaxVestableAmount(_account);
-            console.log('maxAmount %s', getMaxVestableAmount(_account));
-            console.log('totalVested %s', getTotalVested(_account));
-            require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
-        }
-
         IERC20(esToken).safeTransferFrom(_account, address(this), _amount);
 
         _mint(_account, _amount);
@@ -341,6 +332,14 @@ contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
                 _mintPair(_account, pairAmountDiff);
             }
         }
+
+        if (hasMaxVestableAmount) {
+            uint256 maxAmount = getMaxVestableAmount(_account);
+            console.log('maxAmount %s', getMaxVestableAmount(_account));
+            console.log('totalVested %s', getTotalVested(_account));
+            require(getTotalVested(_account) <= maxAmount, "Vester: max vestable amount exceeded");
+        }
+
 
         emit Deposit(_account, _amount);
     }
