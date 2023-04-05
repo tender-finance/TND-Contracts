@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 import "./interfaces/ComptrollerInterface.sol";
 
-contract VesterV3 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable, OwnableUpgradeable {
+contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable, OwnableUpgradeable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 

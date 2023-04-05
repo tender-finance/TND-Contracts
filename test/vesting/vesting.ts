@@ -45,12 +45,32 @@ describe('vesting', function () {
     expect(balance).to.equal(depositAmount);
   });
 
-  it('Should not vest if TND unstaked', async () => {
+  it('Should not allow unstaking reserved TND', async () => {
     const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
     const depositAmount = fa(1000);
     await stakeTND(rewardRouter, depositAmount, testWallet);
     await deposit(vester, depositAmount, testWallet);
     expect(rewardRouter.connect(testWallet).unstakeTnd(1))
       .revertedWith('RewardTracker: burn amount exceeds balance')
+  })
+
+  it('Should allow unstaking unreserved TND', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const depositAmount = fa(500);
+    await stakeTND(rewardRouter, depositAmount.mul(2), testWallet);
+    await deposit(vester, depositAmount, testWallet);
+    expect(rewardRouter.connect(testWallet).unstakeTnd(depositAmount))
+      .not.reverted;
+  })
+
+  it('Should allow unstaking TND if vesting is cancelled', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const depositAmount = fa(1000);
+    await stakeTND(rewardRouter, depositAmount, testWallet);
+    await deposit(vester, depositAmount, testWallet);
+    await increaseDays(1);
+    await vester.connect(testWallet).withdraw();
+    expect(rewardRouter.connect(testWallet).unstakeTnd(depositAmount))
+      .not.reverted;
   })
 })
