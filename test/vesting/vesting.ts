@@ -1,5 +1,5 @@
 import { getDeployment, increaseDays, formatAmount as fa } from '../utils/helpers';
-import { vestingFixture }  from './fixtures';
+import { vestingFixture, setTokensPerInterval }  from './fixtures';
 import { CONTRACTS as c } from '../utils/constants';
 import {
   expect,
@@ -72,5 +72,27 @@ describe('vesting', function () {
     await vester.connect(testWallet).withdraw();
     expect(rewardRouter.connect(testWallet).unstakeTnd(depositAmount))
       .not.reverted;
+  })
+
+  it('Should allow vesting esTND as long as amount < staked', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const depositAmount = fa(200);
+    await setTokensPerInterval('sbfTND_RewardDistributor', 0);
+
+    await stakeTND(rewardRouter, depositAmount, testWallet);
+
+    const tnd = await getDeployment('TND');
+    const startBalance = await tnd.balanceOf(testWallet.address);
+    console.log(startBalance.toString());
+
+    await deposit(vester, depositAmount, testWallet);
+    await increaseDays(366);
+    await vester.connect(testWallet).claim();
+    await deposit(vester, depositAmount, testWallet);
+    await increaseDays(366);
+    await vester.connect(testWallet).claim();
+
+    const endBalance = await tnd.balanceOf(testWallet.address);
+    console.log(endBalance.toString());
   })
 })

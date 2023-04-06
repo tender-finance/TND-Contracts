@@ -39,6 +39,12 @@ export async function getDeployment (contract: DeploymentName) {
   return await ethers.getContractAt(contractInfo.contract, contractInfo.address);
 }
 
+export async function getDeployments (contracts: DeploymentName[]) {
+  return await Promise.all(contracts.map(async (contract) => {
+    return getDeployment(contract)
+  }));
+}
+
 export async function deployUpgradable (abi: string, args: any[], signer: any) {
   const Factory = await ethers.getContractFactory(abi);
   return await upgrades.deployProxy(Factory, args, signer)

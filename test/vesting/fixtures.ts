@@ -1,5 +1,5 @@
 import { SECONDS_PER_DAY, CONTRACTS as c } from '../utils/constants';
-import { ethers } from 'hardhat';
+import { ethers, BigNumberish } from '../imports';
 import {
   deployUpgradable,
   setHandler,
@@ -13,6 +13,12 @@ import {
   multisigAddress,
 } from '../utils/constants'
 
+export async function setTokensPerInterval(contractName: string, newAmount: BigNumberish) {
+  const admin = await ethers.getImpersonatedSigner(adminAddress);
+  const c = await getDeployment(contractName);
+  await c.connect(admin).setTokensPerInterval(newAmount);
+  return
+}
 export async function deployVester (signer: any) {
   const args = [
     "Vested TND",
@@ -64,4 +70,35 @@ export async function vestingFixture () {
 
   const rewardRouter = await deployRewardRouter(vester.address, admin);
   return { testWallet, vester, rewardRouter };
+}
+
+export async function instantVestingFixture () {
+  const admin = await ethers.getImpersonatedSigner(adminAddress);
+  const multisig = await ethers.getImpersonatedSigner(multisigAddress);
+  const [testWallet] = await ethers.getSigners()
+  await fundWithEth(admin.address);
+  await fundWithEth(multisig.address);
+
+  const args = [
+    c.esTND.address,        // depositToken:
+    c.TND.address,          // claimToken:
+    formatAmount(15, 16),     // claimWeight:
+    formatAmount(50,16),      // burnWeight:
+    [ multisig.address ],   // recievers:
+    [ formatAmount(35, 16) ]   // recieverWeights:
+  ]
+  const tnd = await getDeployment('TND');
+  const esTND = await getDeployment('esTND');
+  const instantVester = await deployUpgradable('contracts/staking/InstantVester.sol:InstantVester', args, admin);
+  await setMinter(instantVester.address, ['esTND'], admin);
+  await setHandler(instantVester.address, ['esTND'], admin);
+  await setMinter(instantVester.address, ['TND'], multisig);
+  await tnd.connect(multisig).transfer(instantVester.address, formatAmount(2000));
+  await esTND.connect(multisig).mint(testWallet.address, formatAmount(1000, 18))
+  return {
+    instantVester,
+    admin,
+    multisig,
+    testWallet
+  }
 }
