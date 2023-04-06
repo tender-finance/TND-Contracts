@@ -85,6 +85,7 @@ contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
             hasMaxVestableAmount = true;
         }
         __Ownable_init();
+        __ReentrancyGuard_init();
     }
 
     function setHandler(address _handler, bool _isActive) external onlyOwner {
@@ -196,18 +197,12 @@ contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
         return amount.add(nextClaimable);
     }
 
-    function getSupplyFactor(address _account) public view returns (uint256) {
-        uint TNDTwapPrice = 3e18; // use oracle later
-        (,uint supplierLiquidity,) = comptroller.getAccountLiquidity(_account);
-        uint liquidityEfficiency = 50e16;
-        return supplierLiquidity
-            .mul(liquidityEfficiency)
-            .div(1e18)
-            .div(TNDTwapPrice);
-    }
-
     function getNonEsTokenStaked(address _account) internal view returns (uint ){
-        uint totalStaked = IRewardTracker(pairToken).stakedAmounts(_account); // staked sbfTND
+       /* Get stakedToken balance excluding esTND
+        * totalStaked = staked sbfTND (TND + bnTND + esTND)
+        * esTokenStaked = staked esTND
+        * return (totalStaked - esTokenStaked) */
+        uint totalStaked = IRewardTracker(pairToken).stakedAmounts(_account);
         uint esTokenStaked = IRewardTracker(rewardTracker).depositBalances(_account, esToken); // staked esTND
         if (totalStaked < esTokenStaked) {
             return 0;

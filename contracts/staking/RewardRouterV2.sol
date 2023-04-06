@@ -67,6 +67,7 @@ contract RewardRouterV2 is ReentrancyGuardUpgradeable, OwnableUpgradeable {
 
     tndVester = _tndVester;
     __Ownable_init();
+    __ReentrancyGuard_init();
   }
 
   // to help users who accidentally send their tokens to this contract
