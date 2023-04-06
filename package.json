@@ -33,6 +33,8 @@
     "hardhat": "^2.6.1",
     "hardhat-contract-sizer": "^2.0.3",
     "node-fetch": "3.2.3",
+    "prettier": "^2.8.7",
+    "prettier-plugin-solidity": "^1.1.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typechain": "^5.1.2",
