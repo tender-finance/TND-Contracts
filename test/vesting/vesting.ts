@@ -1,5 +1,5 @@
 import { getDeployment, increaseDays, formatAmount as fa } from '../utils/helpers';
-import { vestingFixture, setTokensPerInterval, getVesterArgs }  from './fixtures';
+import { vestingFixture, setTokensPerInterval, getVesterArgs, getRewardRouterArgs }  from './fixtures';
 import { CONTRACTS as c } from '../utils/constants';
 import {
   expect,
@@ -91,8 +91,15 @@ describe('vesting', function () {
   })
   it('should not allow re-initialization of vester', async() => {
     const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
-    const vesterArgs = await getVesterArgs(testWallet.address, testWallet.address, 365);
+    const vesterArgs = await getVesterArgs();
     expect(vester.initialize(...vesterArgs)).revertedWith(
+      'Initializable: contract is already initialized'
+    )
+  })
+  it('should not allow re-initialization of router', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const rewardRouterArgs = await getRewardRouterArgs(vester.address);
+    expect(rewardRouter.initialize(...rewardRouterArgs)).revertedWith(
       'Initializable: contract is already initialized'
     )
   })

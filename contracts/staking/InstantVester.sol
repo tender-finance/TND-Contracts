@@ -101,11 +101,6 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
             MintableBaseToken(depositToken).isHandler(address(this)),
             'Instant vester is not a handler and cannot transfer'
         );
-
-        require(
-            MintableBaseToken(depositToken).isMinter(address(this)),
-            'Instant vester is not a minter and cannot burn'
-        );
     }
 
     function instantVest(uint256 amount) public nonReentrant {
@@ -131,6 +126,7 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
     }
 
     function _instantVestForAccount(address account, uint256 depositAmount) private {
+        require(account != address(0), 'InstantVester: Invalid address');
         require(depositToken.balanceOf(account) >= depositAmount, 'InstantVester: amount exceeds balance');
         uint claimAmount = getProportion(depositAmount, claimWeight);
         require(claimToken.balanceOf(address(this)) >= claimAmount, 'InstantVester: Insufficient vester balance');
@@ -147,6 +143,12 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
         uint burnAmount = getProportion(depositAmount, burnWeight);
         claimToken.approve(address(burner), burnAmount);
         burner.transferAndBurn(address(claimToken), burnAmount);
+
+        // identity property of addition
+        require(
+            claimAmount.add(treasuryAmount) == depositAmount.sub(burnAmount),
+            'Error total burn, treasury, and claim do not match deposit amount'
+        );
 
         // send TND to caller
         claimToken.transfer(account, claimAmount);

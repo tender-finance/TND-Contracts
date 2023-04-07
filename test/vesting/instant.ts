@@ -21,10 +21,9 @@ const logBalances = async (contracts: any[], account: any, log=false) => {
 }
 describe('InstantVesting', function () {
 
-  it('Should allow someone to instantly recieve 15% of their esTND', async function () {
+  it('Should allow someone to instantly recieve % of their esTND', async function () {
     const { instantVester, testWallet} = await loadFixture(instantVestingFixture);
     const [esTND, tnd] = await getDeployments(['esTND', 'TND']);
-    console.log(await tnd.balanceOf(testWallet.address))
     const esBalance = await esTND.balanceOf(testWallet.address);
     const claimWeight = await instantVester.claimWeight()
 
@@ -42,7 +41,7 @@ describe('InstantVesting', function () {
     const tndSupplyBefore = await tnd.totalSupply();
     const esTNDSupplyBefore = await esTND.totalSupply();
 
-    const [esBalance, tndBalance] = await logBalances([esTND, tnd], testWallet.address, false);
+    const [esBalance, tndBalance] = await logBalances([esTND, tnd], testWallet.address);
     await instantVester.connect(testWallet).instantVest(esBalance);
 
     const tndSupplyAfter = await tnd.totalSupply();
@@ -54,7 +53,7 @@ describe('InstantVesting', function () {
   it('Should not allow someone to vest more esTND than they have', async function () {
     const { instantVester, testWallet} = await loadFixture(instantVestingFixture);
     const [esTND, tnd] = await getDeployments(['esTND', 'TND']);
-    const [esBalance, _] = await logBalances([esTND, tnd], testWallet.address, true);
+    const [esBalance, _] = await logBalances([esTND, tnd], testWallet.address);
     expect(
       instantVester.connect(testWallet).instantVest(esBalance.add(1))
     ).revertedWith('InstantVester: amount exceeds balance');
@@ -63,7 +62,7 @@ describe('InstantVesting', function () {
   it('Should not allow someone to call admin functions', async function () {
     const { instantVester, testWallet, multisig} = await loadFixture(instantVestingFixture);
     const [esTND, tnd] = await getDeployments(['esTND', 'TND']);
-    const [esBalance, tndBalance] = await logBalances([esTND, tnd], testWallet.address, true);
+    const [esBalance, tndBalance] = await logBalances([esTND, tnd], testWallet.address);
     expect(
       instantVester.connect(testWallet).setTreasuryWeight(fa(10,16))
     ).revertedWith('Ownable: caller is not the owner');

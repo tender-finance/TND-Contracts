@@ -35,8 +35,10 @@ export function getVesterArgs() {
 export async function deployVester (signer: any) {
   const args = getVesterArgs();
   const vester = await deployUpgradable('contracts/staking/VesterV2.sol:VesterV2', args, signer);
-  await setHandler(vester.address, ['sTND', 'bnTND', 'sbTND', 'sbfTND', 'esTND'], signer);
-  await setMinter(vester.address, ['bnTND', 'esTND'], signer);
+  // await setHandler(vester.address, ['sTND', 'bnTND', 'sbTND', 'sbfTND', 'esTND'], signer);
+  await setHandler(vester.address, ['sbfTND', 'esTND'], signer);
+  // await setMinter(vester.address, ['bnTND', 'esTND'], signer);
+  await setMinter(vester.address, ['esTND'], signer);
   return vester;
 }
 
