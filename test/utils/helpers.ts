@@ -46,11 +46,11 @@ export async function getDeployments (contracts: DeploymentName[]) {
 }
 
 export async function deployUpgradable (abi: string, args: any[], signer: any) {
-  const Factory = await ethers.getContractFactory(abi);
+  const Factory = await ethers.getContractFactory(abi, signer);
   return await upgrades.deployProxy(Factory, args, signer)
 }
 export async function upgrade (address: string, abi: string, signer: any) {
-  const VesterV3 = await ethers.getContractFactory(abi);
+  const VesterV3 = await ethers.getContractFactory(abi, signer);
   return await upgrades.upgradeProxy(address, VesterV3, signer)
 }
 

@@ -1,5 +1,5 @@
 import { getDeployment, increaseDays, formatAmount as fa } from '../utils/helpers';
-import { vestingFixture, setTokensPerInterval }  from './fixtures';
+import { vestingFixture, setTokensPerInterval, getVesterArgs }  from './fixtures';
 import { CONTRACTS as c } from '../utils/constants';
 import {
   expect,
@@ -74,7 +74,7 @@ describe('vesting', function () {
       .not.reverted;
   })
 
-  it('Should allow vesting esTND as long as amount < staked', async () => {
+  it('Should not allow vesting two sets of esTND <= staked TND', async () => {
     const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
     const depositAmount = fa(200);
     await setTokensPerInterval('sbfTND_RewardDistributor', 0);
@@ -83,16 +83,17 @@ describe('vesting', function () {
 
     const tnd = await getDeployment('TND');
     const startBalance = await tnd.balanceOf(testWallet.address);
-    console.log(startBalance.toString());
 
     await deposit(vester, depositAmount, testWallet);
     await increaseDays(366);
     await vester.connect(testWallet).claim();
-    await deposit(vester, depositAmount, testWallet);
-    await increaseDays(366);
-    await vester.connect(testWallet).claim();
-
-    const endBalance = await tnd.balanceOf(testWallet.address);
-    console.log(endBalance.toString());
+    expect(deposit(vester, 1, testWallet)).revertedWith('Vester: max vestable amount exceeded')
+  })
+  it('should not allow re-initialization of vester', async() => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const vesterArgs = await getVesterArgs(testWallet.address, testWallet.address, 365);
+    expect(vester.initialize(...vesterArgs)).revertedWith(
+      'Initializable: contract is already initialized'
+    )
   })
 })
