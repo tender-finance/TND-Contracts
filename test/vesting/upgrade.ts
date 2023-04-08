@@ -20,11 +20,21 @@ const getSigner = async () => {
   return signer;
 }
 
+async function verify () {
+  await hre.run("verify:verify", {
+    address: '0x438BE5cBFAfDC89abf15B9565842cDbe43382dB0',
+    contract: 'contracts/staking/VesterV2.sol:VesterV2',
+    constructorArguments: [],
+  });
+}
 async function upgradeVester() {
   const signer = await getSigner();
   const VesterV2 = await ethers.getContractFactory('VesterV2', signer);
   console.log('upgrading vester');
-  await upgrades.upgradeProxy(c.vTND, VesterV2);
+  const vTND = await upgrades.upgradeProxy(c.vTND, VesterV2);
+  await hre.run("verify:verify", {
+    address: vTND.address,
+  });
   console.log('upgraded vester');
 }
 
