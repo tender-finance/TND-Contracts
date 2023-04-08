@@ -5,7 +5,8 @@ import {
   setMinter,
   deployUpgradable,
   setHandler,
-  formatAmount
+  formatAmount,
+  fundWithEth
 } from '../utils/helpers';
 import { adminAddress, multisigAddress, SECONDS_PER_DAY, CONTRACTS as c } from '../utils/constants';
 
@@ -55,19 +56,28 @@ async function deployVester(signer: any) {
 }
 
 async function deployRewardRouter (vester: any, signer: any) {
-  const nativeToken = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"; // weth
-  const args = [
-    nativeToken,
+  const RewardRouter = await ethers.getContractFactory('contracts/staking/RewardRouterV2.sol:RewardRouterV2', signer);
+  const rewardRouter = await RewardRouter.deploy();
+  if (netName != 'hardhat') {
+    await hre.run('verify:verify', {
+      contract: 'contracts/staking/RewardRouterV2.sol:RewardRouterV2',
+      address: rewardRouter.address,
+      arguments: []
+    })
+  }
+  await rewardRouter.connect(signer).initialize(
+    '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
     c.TND.address,
     c.esTND.address,
     c.bnTND.address,
     c.sTND.address,
     c.sbTND.address,
     c.sbfTND.address,
-    vester.address
-  ];
-  const rewardRouter = await deployUpgradable('RewardRouterV2', args, signer);
-  await verifyProxy('rewardRouter', rewardRouter.address);
+    vester.address,
+    '0xeed247Ba513A8D6f78BE9318399f5eD1a4808F8e'
+  )
+  // const rewardRouter = await deployUpgradable('RewardRouterV2', args, signer);
+  // await verifyProxy('rewardRouter', rewardRouter.address);
   console.log('deployed rewardRouter to address:', rewardRouter.address);
   return rewardRouter;
 }
@@ -80,7 +90,7 @@ async function deployBurner(signer: any) {
 
   if (netName != 'hardhat') {
     await hre.run('verify:verify', {
-      contract: 'contracts/vesting/Burner.sol:Burner',
+      contract: 'contracts/staking/Burner.sol:Burner',
       address: burner.address,
       arguments: []
     })
@@ -105,41 +115,53 @@ async function deployInstantVester (burner:any , signer: any) {
   return instantVester;
 }
 
-async function deployVesting() {
+async function setPermissions(
+  vesterAddress: string,
+  rewardRouterAddress: string,
+  burnerAddress: string,
+  instantVesterAddress: string
+) {
   const signer = await getSigner();
-  async function setPermissions(vester: any, rewardRouter: any, burner: any, instantVester: any) {
-    await burner.connect(signer).setHandler(instantVester.address, true);
-    await setHandler(instantVester.address, ['esTND'], signer);
+  const rewardRouter = await ethers.getContractAt('RewardRouterV2', rewardRouterAddress, signer);
+  const vester = await ethers.getContractAt('VesterV2', vesterAddress, signer)
+  const burner = await ethers.getContractAt('Burner', burnerAddress, signer)
+  const instantVester = await ethers.getContractAt('InstantVester', instantVesterAddress, signer)
 
-    await setHandler(burner.address, ['esTND'], signer);
-    await setMinter(burner.address, ['esTND'], signer);
+  await burner.connect(signer).setHandler(instantVester.address, true);
+  await setHandler(instantVester.address, ['esTND'], signer);
 
-    await setHandler(rewardRouter.address, ['sTND', 'bnTND', 'sbTND', 'sbfTND', 'esTND'], signer);
-    await setMinter(rewardRouter.address, ['bnTND'], signer);
+  await setHandler(burner.address, ['esTND'], signer);
+  await setMinter(burner.address, ['esTND'], signer);
 
-    await setHandler(vester.address, ['sbfTND', 'esTND'], signer);
-    await setMinter(vester.address, ['esTND'], signer);
+  await setHandler(rewardRouter.address, ['sTND', 'bnTND', 'sbTND', 'sbfTND', 'esTND'], signer);
+  await setMinter(rewardRouter.address, ['bnTND'], signer);
 
-    await vester.connect(signer).setHandler(rewardRouter.address, true)
-  }
+  await setHandler(vester.address, ['sbfTND', 'esTND'], signer);
+  await setMinter(vester.address, ['esTND'], signer);
+
+  await vester.connect(signer).setHandler(rewardRouter.address, true)
+  console.log('permissions set')
+}
+async function deployVesting() {
+  // const signer = await getSigner();
+  const signer = await ethers.getImpersonatedSigner('0xFa7036b7c0EfB9FA66118CDA00db5c7685b9404f')
+  await fundWithEth(signer.address)
   const vester = await deployVester(signer);
   const rewardRouter = await deployRewardRouter(vester, signer);
   const burner = await deployBurner(signer);
   const instantVester  = await deployInstantVester(burner, signer);
-  const owners = await Promise.all([
-    vester.owner(),
-    rewardRouter.owner(),
-    burner.owner(),
-    instantVester.owner()
-  ]);
-  owners.forEach((owner:any) => {
-    if(owner != signer.address){
-      console.log('owner mismatch', owner, signer.address)
-      return
-    }
-  });
-  await setPermissions(vester, rewardRouter, burner, instantVester);
+  return {
+    vesterAddress: vester.address,
+    rewardRouterAddress: rewardRouter.address,
+    burnerAddress: burner.address,
+    instantVesterAddress: instantVester.address
+  }
 }
-// await setMinter(burner.address, ['TND'], multisig); // TODO
 
-deployVesting();
+deployVesting().then((addresses) => {
+  setPermissions(
+    addresses.vesterAddress,
+    addresses.rewardRouterAddress,
+    addresses.burnerAddress,
+    addresses.instantVesterAddress)
+});

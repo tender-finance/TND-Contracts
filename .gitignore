@@ -1,6 +1,7 @@
 node_modules/
 typechain/
 env.json
+deployments/deploy_logs
 .tmp-addresses*.json
 data/gmxMigration
 data/esGmxDistribution
