@@ -1,6 +1,7 @@
 node_modules/
 typechain/
 env.json
+deployments/deploy_logs
 .tmp-addresses*.json
 data/gmxMigration
 data/esGmxDistribution
@@ -11,6 +12,11 @@ data/snapshotBalance
 data/holders
 flattened
 distribution-data*.json
+yarn-error.log
+cache_forge
+out
+
+
 
 #Hardhat files
 cache

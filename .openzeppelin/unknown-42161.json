@@ -1,0 +1,568 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x5b01Ea6e1f75B96898A57790d066EBfaDc67970b",
+    "txHash": "0xd05a9b500aa8aa489608748e499f3d58d0f3f86d2095f94be6840b4671743b08"
+  },
+  "proxies": [
+    {
+      "address": "0xc5888f8D3663a6c27E4a2767a20C0CF347b2bb0e",
+      "txHash": "0x8b18fd796ddb2b0802a260b46e3a87e1cc6ff4b571ac6b23161951476b2d5b1e",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x342EccCB3f2b1947E3EbADd0B70001f494524105",
+      "txHash": "0x107bec7dac045539a566d4ea14de030ce17532dd1c1df98063910b7b65df753d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xbc2aE6FEcbdd56db76972B57572556436b4a42fb",
+      "txHash": "0x2b3b5fa3dbd2953f63dc878ee3f7e2b475bb1105dd25a7c1ec632744edd43df2",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "1684482c25f4980347a0619a76491a59c6950238cad18260da731f2c4b41cd10": {
+      "address": "0x80a62b97f592c220d9c158D3836dc12E96555d64",
+      "txHash": "0x73a36efb7ee94736621355b8416bd338bab114bc0cd8d34c328d9a9146bd815a",
+      "layout": {
+        "solcVersion": "0.6.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "name",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_string_storage",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:20"
+          },
+          {
+            "label": "symbol",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_string_storage",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:21"
+          },
+          {
+            "label": "decimals",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_uint8",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:22"
+          },
+          {
+            "label": "vestingDuration",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:24"
+          },
+          {
+            "label": "esToken",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:26"
+          },
+          {
+            "label": "pairToken",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:27"
+          },
+          {
+            "label": "claimableToken",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:28"
+          },
+          {
+            "label": "rewardTracker",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_address",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:30"
+          },
+          {
+            "label": "totalSupply",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:32"
+          },
+          {
+            "label": "pairSupply",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_uint256",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:33"
+          },
+          {
+            "label": "hasMaxVestableAmount",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_bool",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:35"
+          },
+          {
+            "label": "comptroller",
+            "offset": 1,
+            "slot": "161",
+            "type": "t_contract(ComptrollerInterface)9663",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:37"
+          },
+          {
+            "label": "balances",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:39"
+          },
+          {
+            "label": "pairAmounts",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:40"
+          },
+          {
+            "label": "cumulativeClaimAmounts",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:41"
+          },
+          {
+            "label": "claimedAmounts",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:42"
+          },
+          {
+            "label": "lastVestingTimes",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:43"
+          },
+          {
+            "label": "transferredAverageStakedAmounts",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:45"
+          },
+          {
+            "label": "transferredCumulativeRewards",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:46"
+          },
+          {
+            "label": "cumulativeRewardDeductions",
+            "offset": 0,
+            "slot": "169",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:47"
+          },
+          {
+            "label": "bonusRewards",
+            "offset": 0,
+            "slot": "170",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:48"
+          },
+          {
+            "label": "isHandler",
+            "offset": 0,
+            "slot": "171",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:50"
+          },
+          {
+            "label": "vipBoostsEnabled",
+            "offset": 0,
+            "slot": "172",
+            "type": "t_bool",
+            "contract": "VesterV2",
+            "src": "contracts/staking/VesterV2.sol:59"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(ComptrollerInterface)9663": {
+            "label": "contract ComptrollerInterface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "3e49e96882af154b9e15b55c2fdcadcc3d8fca7fb94e23189a7a12ac62574488": {
+      "address": "0x57437F98ce4fd4d3Cc1827B0095d93184827c46f",
+      "txHash": "0x4a434f1663e765615b8a00917bc304be0293ff17c0d1b53643e158ca39b76585",
+      "layout": {
+        "solcVersion": "0.6.12",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:37"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:20"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:74"
+          },
+          {
+            "label": "claimToken",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_contract(MintableBaseToken)10930",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:16"
+          },
+          {
+            "label": "depositToken",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_contract(MintableBaseToken)10930",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:17"
+          },
+          {
+            "label": "receivers",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:19"
+          },
+          {
+            "label": "vestedForUser",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:20"
+          },
+          {
+            "label": "claimWeight",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:22"
+          },
+          {
+            "label": "burnWeight",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:23"
+          },
+          {
+            "label": "treasury",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_address",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:25"
+          },
+          {
+            "label": "treasuryWeight",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:26"
+          },
+          {
+            "label": "burner",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_contract(IBurner)9710",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:28"
+          },
+          {
+            "label": "totalClaimed",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:30"
+          },
+          {
+            "label": "totalDeposited",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:31"
+          },
+          {
+            "label": "totalBurned",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:32"
+          },
+          {
+            "label": "totalTreasury",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_uint256",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:33"
+          },
+          {
+            "label": "accountTotalClaimed",
+            "offset": 0,
+            "slot": "164",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:35"
+          },
+          {
+            "label": "accountTotalDeposited",
+            "offset": 0,
+            "slot": "165",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:36"
+          },
+          {
+            "label": "accountTotalBurned",
+            "offset": 0,
+            "slot": "166",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:37"
+          },
+          {
+            "label": "accountTotalTreasury",
+            "offset": 0,
+            "slot": "167",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:38"
+          },
+          {
+            "label": "isHandler",
+            "offset": 0,
+            "slot": "168",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "InstantVester",
+            "src": "contracts/staking/InstantVester.sol:40"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBurner)9710": {
+            "label": "contract IBurner",
+            "numberOfBytes": "20"
+          },
+          "t_contract(MintableBaseToken)10930": {
+            "label": "contract MintableBaseToken",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}
