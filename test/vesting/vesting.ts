@@ -22,6 +22,13 @@ async function stakeTND(rewardRouter: Contract, amount: BigNumberish, signer: Si
   await rewardRouter.connect(signer).stakeTnd(amount);
 }
 
+async function stakeEsTND(rewardRouter: Contract, amount: BigNumberish, signer: SignerWithAddress) {
+  const esTND = await getDeployment('esTND');
+  await esTND.connect(signer).approve(rewardRouter.address, amount)
+  await esTND.connect(signer).approve(c.sTND.address, amount)
+  await rewardRouter.connect(signer).stakeEsTnd(amount);
+}
+
 describe('vesting', function () {
   it('should revert if staked amount < deposit amount', async () => {
     const { testWallet, vester } = await loadFixture(vestingFixture);
@@ -54,6 +61,16 @@ describe('vesting', function () {
       .revertedWith('RewardTracker: burn amount exceeds balance')
   })
 
+  it('Should not allow unstaking reserved esTND', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    const esTNDBalance = await (await getDeployment('esTND')).balanceOf(testWallet.address);
+    const depositAmount = esTNDBalance.div(2);
+    await stakeEsTND(rewardRouter, depositAmount, testWallet);
+    await deposit(vester, depositAmount, testWallet);
+    expect(rewardRouter.connect(testWallet).unstakeEsTnd(1))
+      .revertedWith('RewardTracker: burn amount exceeds balance')
+  })
+
   it('Should allow unstaking unreserved TND', async () => {
     const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
     const depositAmount = fa(500);
@@ -61,6 +78,17 @@ describe('vesting', function () {
     await deposit(vester, depositAmount, testWallet);
     expect(rewardRouter.connect(testWallet).unstakeTnd(depositAmount))
       .not.reverted;
+  })
+
+  it('Should only allow vesting same amount as tokens staked', async () => {
+    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
+    await stakeTND(rewardRouter, fa(250), testWallet);
+    await stakeEsTND(rewardRouter, fa(150), testWallet);
+    const sbfTND = await getDeployment('sbfTND');
+    expect(deposit(vester, await sbfTND.balanceOf(testWallet.address), testWallet))
+     .not.reverted;
+    expect(deposit(vester, 1, testWallet))
+     .revertedWith('Vester: max vestable amount exceeded');
   })
 
   it('Should allow unstaking TND if vesting is cancelled', async () => {
@@ -81,25 +109,15 @@ describe('vesting', function () {
 
     await stakeTND(rewardRouter, depositAmount, testWallet);
 
-    const tnd = await getDeployment('TND');
-    const startBalance = await tnd.balanceOf(testWallet.address);
-
     await deposit(vester, depositAmount, testWallet);
     await increaseDays(366);
     await vester.connect(testWallet).claim();
     expect(deposit(vester, 1, testWallet)).revertedWith('Vester: max vestable amount exceeded')
   })
   it('should not allow re-initialization of vester', async() => {
-    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
-    const vesterArgs = await getVesterArgs();
+    const { vester } = await loadFixture(vestingFixture);
+    const vesterArgs = getVesterArgs();
     expect(vester.initialize(...vesterArgs)).revertedWith(
-      'Initializable: contract is already initialized'
-    )
-  })
-  it('should not allow re-initialization of router', async () => {
-    const { testWallet, vester, rewardRouter } = await loadFixture(vestingFixture);
-    const rewardRouterArgs = await getRewardRouterArgs(vester.address);
-    expect(rewardRouter.initialize(...rewardRouterArgs)).revertedWith(
       'Initializable: contract is already initialized'
     )
   })

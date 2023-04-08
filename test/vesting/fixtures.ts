@@ -12,6 +12,7 @@ import {
   adminAddress,
   multisigAddress,
 } from '../utils/constants'
+import { upgrades } from 'hardhat';
 
 export async function setTokensPerInterval(contractName: string, newAmount: BigNumberish) {
   const admin = await ethers.getImpersonatedSigner(adminAddress);
@@ -70,7 +71,8 @@ export async function vestingFixture () {
   await fundWithEth(admin.address);
   await fundWithEth(multisig.address);
 
-  const vester = await deployVester(admin);
+  const VesterV2 = await ethers.getContractFactory('VesterV2', admin);
+  const vester = await upgrades.upgradeProxy(c.vTND, VesterV2);
   const tnd = await getDeployment('TND');
   const esTND = await getDeployment('esTND');
 
@@ -78,7 +80,7 @@ export async function vestingFixture () {
   await tnd.connect(multisig).transfer(testWallet.address, formatAmount(1000, 18))
   await esTND.connect(admin).mint(testWallet.address, formatAmount(10000, 18))
 
-  const rewardRouter = await deployRewardRouter(vester.address, admin);
+  const rewardRouter = await getDeployment('RewardRouter');
   return { testWallet, vester, rewardRouter };
 }
 

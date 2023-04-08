@@ -41,6 +41,18 @@ export const CONTRACTS: Deployments = {
   RewardRouter: {
    address: deployed.RewardRouter,
    contract: "RewardRouterV2",
+  },
+  vTND: {
+    address: deployed.vTND,
+    contract: "VesterV2",
+  },
+  InstantVester: {
+    address: deployed.InstantVester,
+    contract: "InstantVester",
+  },
+  Burner: {
+    address: deployed.Burner,
+    contract: "Burner",
   }
 }
 

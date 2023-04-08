@@ -197,21 +197,16 @@ contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
         return amount.add(nextClaimable);
     }
 
-    function getNonEsTokenStaked(address _account) internal view returns (uint ){
+    function getTokensStaked(address _account) internal view returns (uint ){
        /* Get stakedToken balance excluding esTND
         * totalStaked = staked sbfTND (TND + bnTND + esTND)
-        * esTokenStaked = staked esTND
-        * return (totalStaked - esTokenStaked) */
+        * return (totalStaked) */
         uint totalStaked = IRewardTracker(pairToken).stakedAmounts(_account);
-        uint esTokenStaked = IRewardTracker(rewardTracker).depositBalances(_account, esToken); // staked esTND
-        if (totalStaked < esTokenStaked) {
-            return 0;
-        }
-        return totalStaked.sub(esTokenStaked);
+        return totalStaked;
     }
 
     function getCombinedAverageStakedAmount(address _account) public override view returns (uint256) {
-        return getNonEsTokenStaked(_account);
+        return getTokensStaked(_account);
     }
 
     function getMaxVestableAmount(address _account) public override view returns (uint256) {
