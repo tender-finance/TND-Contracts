@@ -5,8 +5,8 @@ import "@nomiclabs/hardhat-etherscan"
 import "@nomiclabs/hardhat-ethers"
 import "hardhat-contract-sizer"
 import '@typechain/hardhat'
-import '@nomicfoundation/hardhat-foundry'
-import "@foundry-rs/hardhat-anvil";
+// import '@nomicfoundation/hardhat-foundry'
+// import "@foundry-rs/hardhat-anvil";
 import {
   ARBITRUM_RPC,
   ARBISCAN_KEY,
@@ -36,7 +36,7 @@ const config: HardhatUserConfig = {
       forking: {
         url: ARBITRUM_RPC,
         enabled: true,
-        blockNumber: 76433959,
+        // blockNumber: 76433959,
       },
     },
     arbitrum: {
@@ -55,6 +55,9 @@ const config: HardhatUserConfig = {
         version: "0.8.2",
       },
       {
+        version: "0.8.9",
+      },
+      {
         version: "0.8.12",
       },
       {
@@ -70,7 +73,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 20
+        runs: 200
       }
     }
   },
