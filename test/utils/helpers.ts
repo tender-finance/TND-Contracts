@@ -55,15 +55,15 @@ export async function upgrade (address: string, abi: string, signer: any) {
 }
 
 export async function setHandler(handlerAddress: string, contracts: DeploymentName[], signer: any) {
-  await Promise.all(contracts.map(async (contractName) => {
+  for (const contractName of contracts) {
     const contract = await getDeployment(contractName);
     await contract.connect(signer).setHandler(handlerAddress, true);
-  }));
+  }
 }
 
 export async function setMinter(handlerAddress: string, contracts: DeploymentName[], signer: any) {
-  await Promise.all(contracts.map(async (contractName) => {
+  for (const contractName of contracts) {
     const contract = await getDeployment(contractName);
-    await contract.connect(signer).setMinter(handlerAddress, true);
-  }));
+    await contract.connect(signer).setHandler(handlerAddress, true);
+  }
 }
