@@ -59,8 +59,8 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
         claimWeight = _claimWeight;
         burnWeight = _burnWeight;
 
-        uint totalDistribution = uint(1e18).sub(_burnWeight).sub(_claimWeight).sub(_treasuryWeight);
-        require(totalDistribution == 0, 'InstantVester: Total distribution not 100%');
+        // sets verifies validity and sets weights
+        setWeights(_treasuryWeight, _burnWeight, _claimWeight);
 
         depositToken = _depositToken;
         claimToken = _claimToken;
@@ -72,16 +72,17 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
         __Ownable_init();
         __ReentrancyGuard_init();
     }
-    function setTreasuryWeight(uint256 _weight) public onlyOwner {
-        treasuryWeight = _weight;
-    }
 
-    function setBurnWeight(uint256 _weight) public onlyOwner {
-        burnWeight = _weight;
-    }
+    function setWeights(uint256 _treasuryWeight, uint256 _burnWeight, uint256 _claimWeight) public onlyOwner {
 
-    function setClaimWeight(uint256 _weight) public onlyOwner {
-        claimWeight = _weight;
+        uint totalDistribution = _burnWeight.add(_claimWeight.add(_treasuryWeight));
+        require(
+            totalDistribution == 1e18,
+            'InstantVester: Total distribution not 100%'
+        );
+        treasuryWeight = _treasuryWeight;
+        burnWeight = _burnWeight;
+        claimWeight = _claimWeight;
     }
 
     function withdraw(uint256 amount) public onlyOwner {
@@ -128,29 +129,23 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
     function _instantVestForAccount(address account, uint256 depositAmount) private {
         require(account != address(0), 'InstantVester: Invalid address');
         require(depositToken.balanceOf(account) >= depositAmount, 'InstantVester: amount exceeds balance');
-        // burn all the esTND
-        depositToken.transferFrom(account, address(this), depositAmount);
-        burner.transferAndBurn(address(depositToken), depositAmount);
 
-        // send TND to dao treasury
+        // calculate distribution
         uint treasuryAmount = getProportion(depositAmount, treasuryWeight);
-        claimToken.transfer(treasury, treasuryAmount);
-
-        // send TND to secure burn contract
         uint burnAmount = getProportion(depositAmount, burnWeight);
-        claimToken.approve(address(burner), burnAmount);
-        burner.transferAndBurn(address(claimToken), burnAmount);
-
-
         uint claimAmount = depositAmount.sub(burnAmount.add(treasuryAmount));
         require(claimToken.balanceOf(address(this)) >= claimAmount, 'InstantVester: Insufficient vester balance');
 
-        uint totalDistribution = uint(1e18)
-            .sub(burnWeight)
-            .sub(claimWeight)
-            .sub(treasuryWeight);
-        require(totalDistribution == 0, 'InstantVester: Total distribution not 100%');
+        // send TND to dao treasury
+        claimToken.transfer(treasury, treasuryAmount);
 
+        // send TND to secure burn contract
+        claimToken.approve(address(burner), burnAmount);
+        burner.transferAndBurn(address(claimToken), burnAmount);
+
+        // send esTND to secure burn contract
+        depositToken.transferFrom(account, address(this), depositAmount);
+        burner.transferAndBurn(address(depositToken), depositAmount);
 
         // send TND to caller
         claimToken.transfer(account, claimAmount);

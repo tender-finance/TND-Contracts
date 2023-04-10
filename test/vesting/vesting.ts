@@ -34,7 +34,7 @@ describe('vesting', function () {
     const { testWallet, vTND } = await loadFixture(vestingFixture);
     const depositAmount = fa(1000);
     expect(deposit(vTND, depositAmount, testWallet))
-      .revertedWith('vTND: max vestable amount exceeded')
+      .revertedWith('Vester: max vestable amount exceeded')
   });
 
   it('Should vest after 1 year', async () => {
@@ -112,7 +112,7 @@ describe('vesting', function () {
     await deposit(vTND, depositAmount, testWallet);
     await increaseDays(366);
     await vTND.connect(testWallet).claim();
-    expect(deposit(vTND, 1, testWallet)).revertedWith('vTND: max vestable amount exceeded')
+    expect(deposit(vTND, 1, testWallet)).revertedWith('Vester: max vestable amount exceeded')
   })
   it('should not allow re-initialization of vTND', async() => {
     const { vTND } = await loadFixture(vestingFixture);

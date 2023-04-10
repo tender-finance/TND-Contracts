@@ -60,13 +60,36 @@ describe('InstantVesting', function () {
 
   it('Should not allow someone to call admin functions', async function () {
     const { instantVester, testWallet } = await loadFixture(instantVestingFixture);
+    const treasuryWeight = fa(40, 16);
+    const claimWeight = fa(10, 16);
+    const burnWeight = fa(50, 16);
+
     expect(
-      instantVester.connect(testWallet).setTreasuryWeight(fa(10,16))
+      instantVester.connect(testWallet).setWeights(
+        treasuryWeight,
+        burnWeight,
+        claimWeight
+      )
     ).revertedWith('Ownable: caller is not the owner');
     expect(
       instantVester.connect(testWallet).withdraw(1)
     ).revertedWith('Ownable: caller is not the owner');
   })
+  it('Should not allow invalid weights to be set', async function () {
+    const { instantVester, admin } = await loadFixture(instantVestingFixture);
+    const treasuryWeight = fa(41, 16);
+    const claimWeight = fa(10, 16);
+    const burnWeight = fa(50, 16);
+
+    expect(
+      instantVester.connect(admin).setWeights(
+        treasuryWeight,
+        burnWeight,
+        claimWeight
+      )
+    ).revertedWith('InstantVester: Total distribution not 100%');
+  })
+
   it('should not take too much esTND', async() => {
     const { instantVester, testWallet} = await loadFixture(instantVestingFixture);
     const [esTND, tnd] = await getDeployments(['esTND', 'TND']);
