@@ -38,25 +38,25 @@ async function verifyImpl (impl: string, abi: string) {
       contract: abi,
       constructorArguments: [],
     });
-    console.log('Implmentation Verified');
+    console.log('Implementation Verified');
   } catch (e) {
-    console.log('Implmentation Verification Failed');
+    console.log('Implementation Verification Failed');
     console.log(e);
   }
 }
-// TODO: get Implementation address to verify on upgrade
 async function upgradeDeployment(name: DeploymentName, abi: string) {
   const signer = await getSigner();
 
   const Factory = await ethers.getContractFactory(abi, signer);
-  console.log('upgrading vester');
+  console.log(`upgrading: ${name}`);
 
   const contract = await upgrades.upgradeProxy(c[name], Factory);
-  console.log('upgraded vester');
+  await contract.deployed()
+  console.log(`upgraded: ${name}`);
 
   const impl = await upgrades.erc1967.getImplementationAddress(contract.address)
   console.log('impl.address', impl);
   await verifyImpl(impl, abi);
 }
 
-upgradeDeployment('vTND', 'contracts/staking/VesterV2.sol:VesterV2')
+upgradeDeployment('InstantVester', 'contracts/staking/InstantVester.sol:InstantVester')
