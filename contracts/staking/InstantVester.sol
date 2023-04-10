@@ -72,16 +72,16 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
         __Ownable_init();
         __ReentrancyGuard_init();
     }
-    function setTreasuryWeight(uint256 _weight) public onlyOwner {
-        treasuryWeight = _weight;
-    }
 
-    function setBurnWeight(uint256 _weight) public onlyOwner {
-        burnWeight = _weight;
-    }
-
-    function setClaimWeight(uint256 _weight) public onlyOwner {
-        claimWeight = _weight;
+    function setWeights(uint256 _treasuryWeight, uint256 _burnWeight, uint256 _claimWeight) public onlyOwner {
+        uint totalDistribution = uint(1e18)
+            .sub(_burnWeight)
+            .sub(_claimWeight)
+            .sub(_treasuryWeight);
+        require(totalDistribution == 0, 'InstantVester: Total distribution not 100%');
+        treasuryWeight = _treasuryWeight;
+        burnWeight = _burnWeight;
+        claimWeight = _claimWeight;
     }
 
     function withdraw(uint256 amount) public onlyOwner {
@@ -144,12 +144,6 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
 
         uint claimAmount = depositAmount.sub(burnAmount.add(treasuryAmount));
         require(claimToken.balanceOf(address(this)) >= claimAmount, 'InstantVester: Insufficient vester balance');
-
-        uint totalDistribution = uint(1e18)
-            .sub(burnWeight)
-            .sub(claimWeight)
-            .sub(treasuryWeight);
-        require(totalDistribution == 0, 'InstantVester: Total distribution not 100%');
 
 
         // send TND to caller
