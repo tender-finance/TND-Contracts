@@ -50,8 +50,8 @@ export async function deployUpgradable (abi: string, args: any[], signer: any) {
   return await upgrades.deployProxy(Factory, args, signer)
 }
 export async function upgrade (address: string, abi: string, signer: any) {
-  const VesterV3 = await ethers.getContractFactory(abi, signer);
-  return await upgrades.upgradeProxy(address, VesterV3, signer)
+  const Factory = await ethers.getContractFactory(abi, signer);
+  return await upgrades.upgradeProxy(address, Factory, signer)
 }
 
 export async function setHandler(handlerAddress: string, contracts: DeploymentName[], signer: any) {

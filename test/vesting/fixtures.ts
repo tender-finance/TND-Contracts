@@ -6,7 +6,8 @@ import {
   setMinter,
   getDeployment,
   formatAmount,
-  fundWithEth
+  fundWithEth,
+  upgrade
 } from '../utils/helpers'
 import {
   adminAddress,
@@ -33,15 +34,6 @@ export function getVesterArgs() {
   ]
 }
 
-export async function deployVester (signer: any) {
-  const args = getVesterArgs();
-  const vester = await deployUpgradable('contracts/staking/VesterV2.sol:VesterV2', args, signer);
-  // await setHandler(vester.address, ['sTND', 'bnTND', 'sbTND', 'sbfTND', 'esTND'], signer);
-  await setHandler(vester.address, ['sbfTND', 'esTND'], signer);
-  // await setMinter(vester.address, ['bnTND', 'esTND'], signer);
-  await setMinter(vester.address, ['esTND'], signer);
-  return vester;
-}
 
 export function getRewardRouterArgs (vesterAddress: string) {
   const nativeToken = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"; // weth
@@ -71,17 +63,24 @@ export async function vestingFixture () {
   await fundWithEth(admin.address);
   await fundWithEth(multisig.address);
 
-  const VesterV2 = await ethers.getContractFactory('VesterV2', admin);
-  const vester = await upgrades.upgradeProxy(c.vTND, VesterV2);
+  // if (!vTND) {
+  //   const args = getVesterArgs();
+  //   vTND = await deployUpgradable('VesterV2', args, admin);
+  //   await setHandler(vTND.address, ['sbfTND', 'esTND'], admin);
+  //   await setMinter(vTND.address, ['esTND'], admin);
+  // return vTND;
+  // } else {
+  const Vester = await ethers.getContractFactory('contracts/staking/VesterV2.sol:VesterV2', admin);
+  let vTND = await upgrades.upgradeProxy('0xc5888f8D3663a6c27E4a2767a20C0CF347b2bb0e', Vester)
   const tnd = await getDeployment('TND');
   const esTND = await getDeployment('esTND');
 
-  await tnd.connect(multisig).transfer(vester.address, formatAmount(10000, 18))
+  await tnd.connect(multisig).transfer(vTND.address, formatAmount(10000, 18))
   await tnd.connect(multisig).transfer(testWallet.address, formatAmount(1000, 18))
   await esTND.connect(admin).mint(testWallet.address, formatAmount(10000, 18))
 
   const rewardRouter = await getDeployment('RewardRouter');
-  return { testWallet, vester, rewardRouter };
+  return { testWallet, vTND, rewardRouter };
 }
 
 export async function instantVestingFixture () {
@@ -107,10 +106,16 @@ export async function instantVestingFixture () {
   ]
   const tnd = await getDeployment('TND');
   const esTND = await getDeployment('esTND');
-  const instantVester = await deployUpgradable('contracts/staking/InstantVester.sol:InstantVester', args, admin);
 
-  await burner.connect(admin).setHandler(instantVester.address, true);
-  await setHandler(instantVester.address, ['esTND'], admin);
+  let instantVester = await getDeployment('InstantVester');
+  if (!instantVester) {
+    instantVester = await deployUpgradable('InstantVester', args, admin);
+    await burner.connect(admin).setHandler(instantVester.address, true);
+    await setHandler(instantVester.address, ['esTND'], admin);
+  } else {
+    const InstantVester = await ethers.getContractFactory('InstantVester', admin);
+    await upgrades.upgradeProxy(instantVester.address, InstantVester)
+  }
 
   await tnd.connect(multisig).transfer(instantVester.address, formatAmount(2000));
   await esTND.connect(multisig).mint(testWallet.address, formatAmount(1000, 18))
