@@ -3,6 +3,7 @@ import '@nomiclabs/hardhat-etherscan'
 import '@openzeppelin/hardhat-upgrades';
 import hre, {ethers, upgrades} from 'hardhat';
 import { adminAddress, CONTRACTS as c } from '../utils/constants';
+import {DeploymentName} from '../../types';
 
 
 const netName = hre.network.name;
@@ -29,23 +30,33 @@ export async function vestingFixture () {
   console.log('upgraded vester');
 }
 
-//async function verify () {
-//  await hre.run("verify:verify", {
-//    address: '0x438BE5cBFAfDC89abf15B9565842cDbe43382dB0',
-//    contract: 'contracts/staking/VesterV2.sol:VesterV2',
-//    constructorArguments: [],
-//  });
-//}
+async function verifyImpl (impl: string, abi: string) {
+  console.log('Starting Implementation Verification:')
+  try {
+    await hre.run("verify:verify", {
+      address: impl,
+      contract: abi,
+      constructorArguments: [],
+    });
+    console.log('Implmentation Verified');
+  } catch (e) {
+    console.log('Implmentation Verification Failed');
+    console.log(e);
+  }
+}
 // TODO: get Implementation address to verify on upgrade
-async function upgradeVester() {
+async function upgradeDeployment(name: DeploymentName, abi: string) {
   const signer = await getSigner();
-  const VesterV2 = await ethers.getContractFactory('VesterV2', signer);
+
+  const Factory = await ethers.getContractFactory(abi, signer);
   console.log('upgrading vester');
-  const vTND = await upgrades.upgradeProxy(c.vTND, VesterV2);
-  await hre.run("verify:verify", {
-    address: vTND.address,
-  });
+
+  const contract = await upgrades.upgradeProxy(c[name], Factory);
   console.log('upgraded vester');
+
+  const impl = await upgrades.erc1967.getImplementationAddress(contract.address)
+  console.log('impl.address', impl);
+  await verifyImpl(impl, abi);
 }
 
-upgradeVester()
+upgradeDeployment('vTND', 'contracts/staking/VesterV2.sol:VesterV2')
