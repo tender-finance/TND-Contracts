@@ -128,9 +128,6 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
     function _instantVestForAccount(address account, uint256 depositAmount) private {
         require(account != address(0), 'InstantVester: Invalid address');
         require(depositToken.balanceOf(account) >= depositAmount, 'InstantVester: amount exceeds balance');
-        uint claimAmount = getProportion(depositAmount, claimWeight);
-        require(claimToken.balanceOf(address(this)) >= claimAmount, 'InstantVester: Insufficient vester balance');
-
         // burn all the esTND
         depositToken.transferFrom(account, address(this), depositAmount);
         burner.transferAndBurn(address(depositToken), depositAmount);
@@ -144,11 +141,16 @@ contract InstantVester is Initializable, ReentrancyGuardUpgradeable, OwnableUpgr
         claimToken.approve(address(burner), burnAmount);
         burner.transferAndBurn(address(claimToken), burnAmount);
 
-        // identity property of addition
-        require(
-            claimAmount.add(treasuryAmount) == depositAmount.sub(burnAmount),
-            'Error total burn, treasury, and claim do not match deposit amount'
-        );
+
+        uint claimAmount = depositAmount.sub(burnAmount.add(treasuryAmount));
+        require(claimToken.balanceOf(address(this)) >= claimAmount, 'InstantVester: Insufficient vester balance');
+
+        uint totalDistribution = uint(1e18)
+            .sub(burnWeight)
+            .sub(claimWeight)
+            .sub(treasuryWeight);
+        require(totalDistribution == 0, 'InstantVester: Total distribution not 100%');
+
 
         // send TND to caller
         claimToken.transfer(account, claimAmount);
