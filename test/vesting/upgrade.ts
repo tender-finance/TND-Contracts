@@ -44,7 +44,7 @@ async function verifyImpl (impl: string, abi: string) {
     console.log(e);
   }
 }
-async function upgradeDeployment(name: DeploymentName, abi: string) {
+export async function upgradeDeployment(name: DeploymentName, abi: string) {
   const signer = await getSigner();
 
   const Factory = await ethers.getContractFactory(abi, signer);
@@ -56,7 +56,8 @@ async function upgradeDeployment(name: DeploymentName, abi: string) {
 
   const impl = await upgrades.erc1967.getImplementationAddress(contract.address)
   console.log('impl.address', impl);
-  await verifyImpl(impl, abi);
+  if(netName != 'hardhat') {
+    await verifyImpl(impl, abi);
+  }
+  return contract;
 }
-
-upgradeDeployment('InstantVester', 'contracts/staking/InstantVester.sol:InstantVester')
