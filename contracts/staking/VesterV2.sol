@@ -92,6 +92,10 @@ contract VesterV2 is Initializable, IVester, IERC20, ReentrancyGuardUpgradeable,
         isHandler[_handler] = _isActive;
     }
 
+    function setDuration(uint _vestingDuration) external onlyOwner {
+        vestingDuration = _vestingDuration;
+    }
+
     function setHasMaxVestableAmount(bool _hasMaxVestableAmount) external onlyOwner {
         hasMaxVestableAmount = _hasMaxVestableAmount;
     }
